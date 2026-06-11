@@ -21,23 +21,37 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable()) 
             .authorizeHttpRequests(auth -> auth
                 
-                // 1. A MÁGICA: Liberta TODOS os ficheiros de interface de uma só vez
-                .requestMatchers("/", "/*.html", "/*.css", "/css/**", "/img/**").permitAll()
+                // 1. Liberta os ficheiros físicos E as NOVAS rotas limpas (Pretty URLs)
+                .requestMatchers(
+                    "/", 
+                    "/login", 
+                    "/cadastro", 
+                    "/recuperar-senha", 
+                    "/redefinir-senha", 
+                    "/*.html", 
+                    "/*.css", 
+                    "/css/**", 
+                    "/img/**"
+                ).permitAll()
                 
-                // 2. Liberta TODO o tráfego de autenticação (Login, Registo, Recuperar Senha)
+                // 2. Liberta TODO o tráfego de autenticação da API
                 .requestMatchers("/api/auth/**").permitAll()
 
-                // 3. Regras de ADMIN (Protege as rotas da API)
-                // Nota: O teu AdminController já tem a trava isUserAdmin() internamente
+                // 3. Regras da Interface Visual Trancada
+                .requestMatchers("/admin-panel").authenticated() // Protege a tela nova do admin
+                .requestMatchers("/dashboard").authenticated()   // Protege a tela nova do utilizador
+
+                // 4. Regras de ADMIN (Protege as rotas de DADOS da API)
+                // A segurança real ocorre no teu AdminController com o isUserAdmin()
                 .requestMatchers("/admin/**").authenticated()
                 .requestMatchers(HttpMethod.POST, "/partidas", "/configuracoes").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/partidas/**").hasRole("ADMIN")
                 
-                // 4. Regras de Utilizadores Autenticados (Ações comuns do jogo)
+                // 5. Regras de Utilizadores Autenticados (Ações comuns do jogo)
                 .requestMatchers(HttpMethod.GET, "/partidas", "/usuarios/ranking").authenticated()
                 .requestMatchers(HttpMethod.POST, "/palpites").authenticated()
                 
-                // 5. Qualquer outra rota não mapeada fica trancada por padrão
+                // 6. Qualquer outra rota não mapeada fica trancada por padrão
                 .anyRequest().authenticated()
             );
 
