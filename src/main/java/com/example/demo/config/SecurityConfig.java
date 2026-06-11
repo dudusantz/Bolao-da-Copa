@@ -20,35 +20,37 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable()) 
             .authorizeHttpRequests(auth -> auth
-                // Libera os ficheiros visuais e as pastas de assets
-                .requestMatchers("/", "/index.html", "/cadastro.html", "/login.html", "/recuperar-senha.html", "/redefinir-senha.html", "/api/auth/**").permitAll()
-                .requestMatchers("/css/**", "/img/**").permitAll()
                 
-                // Libera os endpoints REST de autenticação pública
-                .requestMatchers(HttpMethod.POST, "/usuarios/registrar", "/api/auth/login").permitAll()
+                // 1. A MÁGICA: Liberta TODOS os ficheiros de interface de uma só vez
+                .requestMatchers("/", "/*.html", "/*.css", "/css/**", "/img/**").permitAll()
+                
+                // 2. Liberta TODO o tráfego de autenticação (Login, Registo, Recuperar Senha)
+                .requestMatchers("/api/auth/**").permitAll()
 
-                // Regras de ADMIN
+                // 3. Regras de ADMIN (Protege as rotas da API)
+                // Nota: O teu AdminController já tem a trava isUserAdmin() internamente
+                .requestMatchers("/admin/**").authenticated()
                 .requestMatchers(HttpMethod.POST, "/partidas", "/configuracoes").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/partidas/**").hasRole("ADMIN")
                 
-                // Regras de utilizadores autenticados
+                // 4. Regras de Utilizadores Autenticados (Ações comuns do jogo)
                 .requestMatchers(HttpMethod.GET, "/partidas", "/usuarios/ranking").authenticated()
                 .requestMatchers(HttpMethod.POST, "/palpites").authenticated()
                 
+                // 5. Qualquer outra rota não mapeada fica trancada por padrão
                 .anyRequest().authenticated()
             );
-            // .httpBasic() removido propositadamente para não conflitar com a Fetch API
 
         return http.build();
     }
 
-    // 1. Define o BCrypt como o padrão de criptografia
+    // Define o BCrypt como o padrão de criptografia
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // 2. Expõe o AuthenticationManager (necessário para o nosso Controller de Login REST)
+    // Expõe o AuthenticationManager para o AuthController funcionar
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();

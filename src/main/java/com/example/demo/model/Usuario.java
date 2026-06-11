@@ -20,20 +20,23 @@ public class Usuario {
     private String senha;
     private Integer pontos;
     
-    @Column(name = "is_admin")
-    private boolean isAdmin = false;
+    // NOMECLATURA CORRETA: A variável chama-se 'admin', a coluna no Supabase é 'is_admin'
+    @Column(name = "is_admin", nullable = false, columnDefinition = "boolean default false")
+    private boolean admin = false;
 
-    // Construtores
+    // Construtor vazio obrigatório para o Hibernate
     public Usuario() {}
 
+    // Construtor para facilitar o registo
     public Usuario(String nome, String email, String senha) {
         this.nome = nome;
         this.email = email;
         this.senha = senha;
         this.pontos = 0; // Todo utilizador começa com 0 pontos
+        this.admin = false; // Garante que ninguém nasce administrador por acidente
     }
 
-    // Getters e Setters
+    // --- Getters e Setters ---
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -49,11 +52,12 @@ public class Usuario {
     public Integer getPontos() { return pontos; }
     public void setPontos(Integer pontos) { this.pontos = pontos; }
 
+    // O getter de boolean no Java DEVE começar por 'is'
     public boolean isAdmin() {
-        return isAdmin;
+        return admin;
     }
 
     public void setAdmin(boolean admin) {
-        this.isAdmin = admin;
+        this.admin = admin;
     }
 }

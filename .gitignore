@@ -1,33 +1,25 @@
-HELP.md
+# Pastas de compilação (Pesadas e geradas automaticamente)
 target/
-.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
+!.mvn/wrapper/maven-wrapper.jar
+log/
+logs/
 
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-
-### IntelliJ IDEA ###
-.idea
+# Configurações de IDEs (Evita conflitos com outros devs)
+.idea/
+.vscode/
 *.iws
 *.iml
 *.ipr
+.project
+.classpath
+.settings/
+.springBeans
 
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
+# Ficheiros de Sistema Operacional
+.DS_Store
+Thumbs.db
 
-### VS Code ###
-.vscode/
+# Configurações locais e ficheiros com senhas (CRÍTICO)
+application-dev.properties
+application-local.properties
+.env

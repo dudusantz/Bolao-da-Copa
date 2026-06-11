@@ -10,7 +10,6 @@
     
     <style>
         :root {
-            /* Paleta do Dashboard */
             --primary: #E31B23;
             --primary-hover: #b8141b;
             --bg-color: #F3F4F6;
@@ -20,6 +19,7 @@
             --border-light: #e2e8f0;
             --danger: #dc2626;
             --danger-bg: #fef2f2;
+            --success: #059669;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
@@ -146,9 +146,11 @@
         .link-secundario strong { color: var(--text-dark); text-decoration: underline; text-decoration-color: transparent; transition: 0.2s; }
         .link-secundario:hover strong { color: var(--primary); text-decoration-color: var(--primary); }
 
+        /* MODO MOBILE */
         @media (max-width: 500px) {
-            .form-container { padding: 30px 20px; border-radius: 20px; }
+            .form-container { padding: 30px 20px; border-radius: 20px; width: 100%; }
             body { padding: 15px; }
+            .title-page { font-size: 1.4rem; }
         }
     </style>
 </head>
@@ -160,13 +162,13 @@
         <form id="form-registro" style="width: 100%;">
             
             <div class="input-group">
-                <label class="input-label" for="nome">Nome</label>
+                <label class="input-label" for="nome">Nome Completo</label>
                 <input type="text" id="nome" class="input-control" placeholder="Ex: João Alves" required autocomplete="name" maxlength="60">
             </div>
 
             <div class="input-group">
                 <label class="input-label" for="email">E-mail de Acesso</label>
-                <input type="email" id="email" class="input-control" placeholder="seuemail@exemplo.com" required autocomplete="email" maxlength="100">
+                <input type="email" id="email" class="input-control" placeholder="teuemail@exemplo.com" required autocomplete="email" maxlength="100">
             </div>
 
             <div class="input-group">
@@ -194,14 +196,10 @@
     </div>
 
     <script>
-        // --- 1. LÓGICA DE BLOQUEIO DE NÚMEROS E CARACTERES ESPECIAIS EM TEMPO REAL ---
         document.getElementById('nome').addEventListener('input', function() {
-            // A Regex abaixo permite letras (a-z, A-Z), acentos (À-ÿ) e espaços (\s).
-            // Tudo o que não for isso (como números, @, !, etc.) é substituído por '' (nada).
             this.value = this.value.replace(/[^a-zA-ZÀ-ÿ\s]/g, '');
         });
 
-        // --- 2. LÓGICA DE SUBMISSÃO E VALIDAÇÃO DE SENHAS ---
         document.getElementById('form-registro').addEventListener('submit', async function(event) {
             event.preventDefault();
 
@@ -254,7 +252,7 @@
                 }
             } catch (erro) {
                 console.error(erro);
-                alert("Erro de conexão com o servidor. O back-end está a rodar?");
+                alert("Erro de conexão com o servidor.");
                 restaurarBotao(btnSubmit, textoOriginal);
             }
         });

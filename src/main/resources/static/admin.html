@@ -7,9 +7,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
-        :root { --primary: #E31B23; --bg-color: #f1f5f9; --card-bg: #ffffff; --text-dark: #0f172a; --text-muted: #64748b; --border: #e2e8f0; }
+        :root { --primary: #E31B23; --bg-color: #f1f5f9; --card-bg: #ffffff; --text-dark: #0f172a; --text-muted: #64748b; --border: #e2e8f0; --success: #059669; --danger: #dc2626; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-dark); display: flex; min-height: 100vh; }
+        body { background-color: var(--bg-color); color: var(--text-dark); display: flex; min-height: 100vh; flex-direction: row; overflow-x: hidden; }
 
         /* SIDEBAR ADMIN */
         .sidebar { width: 280px; background: #0f172a; color: white; padding: 2rem 1.5rem; display: flex; flex-direction: column; gap: 2rem; box-shadow: 4px 0 15px rgba(0,0,0,0.1); z-index: 10; }
@@ -34,9 +34,8 @@
         /* CARDS & INPUTS */
         .admin-card { background: var(--card-bg); border-radius: 16px; padding: 25px; box-shadow: 0 4px 15px -3px rgba(0,0,0,0.05); border: 1px solid var(--border); margin-bottom: 20px; }
         
-        /* SELECT DE FASE */
-        .fase-selector { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
-        .fase-selector select { padding: 12px 20px; font-size: 1.1rem; font-weight: 700; border-radius: 10px; border: 2px solid var(--border); background: #f8fafc; color: var(--text-dark); cursor: pointer; outline: none; }
+        .fase-selector { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+        .fase-selector select { padding: 12px 20px; font-size: 1.1rem; font-weight: 700; border-radius: 10px; border: 2px solid var(--border); background: #f8fafc; color: var(--text-dark); cursor: pointer; outline: none; width: 100%; max-width: 300px; }
         .fase-selector select:focus { border-color: var(--primary); }
 
         .config-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 20px; }
@@ -44,29 +43,76 @@
         .input-group input { width: 100%; padding: 14px; font-size: 1.3rem; font-weight: 800; border-radius: 10px; border: 2px solid var(--border); background: #f8fafc; text-align: center; outline: none; transition: 0.2s; }
         .input-group input:focus { border-color: var(--primary); background: white; }
         
-        .btn-action { background: var(--primary); color: white; border: none; padding: 14px 24px; border-radius: 10px; font-size: 1rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s; box-shadow: 0 4px 12px rgba(227, 27, 35, 0.2); }
+        .btn-action { background: var(--primary); color: white; border: none; padding: 14px 24px; border-radius: 10px; font-size: 1rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s; box-shadow: 0 4px 12px rgba(227, 27, 35, 0.2); width: 100%; justify-content: center; }
         .btn-action:hover { background: #b8141b; transform: translateY(-2px); }
 
         /* LISTA DE JOGOS */
-        .match-row { display: flex; justify-content: space-between; align-items: center; padding: 20px; border: 1px solid var(--border); border-radius: 12px; margin-bottom: 15px; background: white; }
+        .match-row { display: flex; justify-content: space-between; align-items: center; padding: 20px; border: 1px solid var(--border); border-radius: 12px; margin-bottom: 15px; background: white; flex-wrap: wrap; gap: 15px; }
+        .match-info { flex: 1; min-width: 200px; }
         .match-info h4 { font-size: 1.2rem; margin-bottom: 4px; }
-        .match-info span { font-size: 0.85rem; font-weight: 600; color: var(--primary); background: #fee2e2; padding: 4px 10px; border-radius: 8px; }
-        .score-inputs { display: flex; align-items: center; gap: 10px; }
+        .match-info span { font-size: 0.85rem; font-weight: 600; color: var(--primary); background: #fee2e2; padding: 4px 10px; border-radius: 8px; display: inline-block;}
+        .score-inputs { display: flex; align-items: center; gap: 10px; width: 100%; justify-content: flex-start; flex-wrap: wrap;}
         .score-inputs input { width: 60px; height: 50px; text-align: center; font-size: 1.5rem; font-weight: 800; border: 2px solid var(--border); border-radius: 8px; outline: none; }
         .score-inputs input:focus { border-color: var(--primary); }
 
-        /* Remove setinhas dos inputs number */
-        input[type="number"]::-webkit-inner-spin-button, 
-        input[type="number"]::-webkit-outer-spin-button { 
-            -webkit-appearance: none; 
-            appearance: none; /* A propriedade padrão que o VS Code pediu */
-            margin: 0; 
+        input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; appearance: none; margin: 0; }
+        input[type="number"] { -moz-appearance: textfield; appearance: textfield; text-align: center; padding: 0; }
+
+        /* =========================================
+           SISTEMA DE TOASTS (NOTIFICAÇÕES FLUTUANTES)
+           ========================================= */
+        #toast-container {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 9999;
+            pointer-events: none; /* Impede que o clique seja bloqueado pelo container invisível */
         }
-        input[type="number"] { 
-            -moz-appearance: textfield; 
-            appearance: textfield; /* A propriedade padrão que o VS Code pediu */
-            text-align: center;
-            padding: 0;
+
+        .toast {
+            background: white;
+            color: var(--text-dark);
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transform: translateX(150%);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            pointer-events: auto; /* Reativa o clique apenas na notificação */
+        }
+
+        .toast.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .toast.success { border-left: 6px solid var(--success); }
+        .toast.success i { color: var(--success); font-size: 1.5rem; }
+        
+        .toast.error { border-left: 6px solid var(--danger); }
+        .toast.error i { color: var(--danger); font-size: 1.5rem; }
+
+        /* MEDIA QUERIES MOBILE */
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            .sidebar { width: 100%; height: auto; padding: 1rem; flex-direction: row; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;}
+            .brand { width: 100%; justify-content: center; margin-bottom: 10px;}
+            .nav-links { flex-direction: row; gap: 10px; width: 100%; justify-content: center;}
+            .nav-btn { font-size: 0.9rem; padding: 8px 12px; }
+            .back-btn { margin-top: 10px; width: 100%; }
+            .main-content { padding: 1.5rem 1rem; }
+            .page-title { font-size: 1.5rem; }
+            .score-inputs button { width: 100%; margin-top: 10px;}
+            #toast-container { bottom: 20px; right: 20px; left: 20px; }
+            .toast { width: 100%; padding: 14px 20px; font-size: 0.85rem;}
         }
     </style>
 </head>
@@ -101,7 +147,7 @@
             
             <div class="admin-card">
                 <div class="fase-selector">
-                    <label style="font-weight: 700; color: var(--text-dark);">Selecione a Fase:</label>
+                    <label style="font-weight: 700; color: var(--text-dark); width: 100%;">Selecione a Fase:</label>
                     <select id="select-fase" onchange="carregarConfiguracao(this.value)">
                         <option value="Fase de Grupos">Fase de Grupos</option>
                         <option value="16 Avos de Final">16 Avos de Final</option>
@@ -134,11 +180,34 @@
 
     </main>
 
+    <div id="toast-container"></div>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             carregarJogosParaAdmin();
             carregarConfiguracao(document.getElementById('select-fase').value);
         });
+
+        // --- MOTOR DE NOTIFICAÇÕES (TOAST) ---
+        function showToast(mensagem, tipo = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${tipo}`;
+            
+            const icone = tipo === 'success' ? 'ph-check-circle' : 'ph-warning-circle';
+            
+            toast.innerHTML = `<i class="ph-fill ${icone}"></i> <span>${mensagem}</span>`;
+            container.appendChild(toast);
+            
+            // Dispara a animação de entrada com um micro-atraso
+            setTimeout(() => toast.classList.add('show'), 10);
+            
+            // Remove automaticamente após 3.5 segundos
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 400); // Espera a animação de saída terminar para remover do HTML
+            }, 3500);
+        }
 
         function switchAdminTab(tabName) {
             document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
@@ -147,10 +216,8 @@
             document.getElementById(`tab-${tabName}`).classList.add('active');
         }
 
-        // --- SISTEMA DE CONFIGURAÇÃO (POR FASE) ---
         async function carregarConfiguracao(faseSelecionada) {
             try {
-                // Envia a fase na URL
                 const res = await fetch(`/admin/configuracao/${encodeURIComponent(faseSelecionada)}`);
                 if (res.ok) {
                     const config = await res.json();
@@ -182,17 +249,19 @@
                 
                 if (res.ok) {
                     setTimeout(() => {
-                        alert(`Regras da fase [${faseAtual}] atualizadas com sucesso!`);
+                        showToast(`Regras da [${faseAtual}] atualizadas com sucesso!`, 'success');
                         btn.innerHTML = '<i class="ph-bold ph-floppy-disk"></i> Salvar Regras desta Fase';
                     }, 500);
                 } else {
-                    alert("Falha de permissão.");
+                    showToast("Falha de permissão ao salvar.", 'error');
                     btn.innerHTML = '<i class="ph-bold ph-floppy-disk"></i> Salvar Regras desta Fase';
                 }
-            } catch(e) { alert("Erro de conexão."); }
+            } catch(e) { 
+                showToast("Erro de conexão com o servidor.", 'error');
+                btn.innerHTML = '<i class="ph-bold ph-floppy-disk"></i> Salvar Regras desta Fase';
+            }
         }
 
-        // --- SISTEMA DE GESTÃO DE PARTIDAS ---
         async function carregarJogosParaAdmin() {
             try {
                 const res = await fetch('/partidas');
@@ -225,7 +294,7 @@
                     `;
                 });
             } catch (e) {
-                alert("Erro ao carregar jogos ou acesso negado.");
+                showToast("Erro ao carregar jogos ou acesso negado.", 'error');
             }
         }
 
@@ -235,7 +304,7 @@
             const goloB = document.getElementById(`realB_${idPartida}`).value;
 
             if (goloA === '' || goloB === '') {
-                alert("Preencha o placar oficial completo!");
+                showToast("Preencha o placar oficial completo!", 'error');
                 return;
             }
 
@@ -252,14 +321,15 @@
 
                     if (resposta.ok) {
                         document.getElementById(`card_${idPartida}`).style.display = 'none';
+                        showToast("Partida encerrada e pontos distribuídos!", 'success');
                     } else {
                         const err = await resposta.json();
-                        alert("Erro: " + err.erro);
+                        showToast("Erro: " + err.erro, 'error');
                         btn.innerHTML = 'Encerrar';
                         btn.disabled = false;
                     }
                 } catch (e) {
-                    alert("Erro crítico no servidor.");
+                    showToast("Erro crítico no servidor.", 'error');
                     btn.innerHTML = 'Encerrar';
                     btn.disabled = false;
                 }

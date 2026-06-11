@@ -29,17 +29,33 @@ public class AdminController {
         this.configRepository = configRepository;
     }
 
+    // --- O RAIO-X DA SEGURANÇA ---
     private boolean isUserAdmin() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) return false;
+        
+        if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
+            System.out.println("❌ RAIO-X ADMIN: Bloqueado. Nenhuma sessão ativa encontrada. O utilizador não está logado.");
+            return false;
+        }
         
         UserDetails userDetails = (UserDetails) auth.getPrincipal();
         Optional<Usuario> user = usuarioRepository.findByEmail(userDetails.getUsername());
         
-        return user.isPresent() && user.get().isAdmin();
+        if (user.isEmpty()) {
+            System.out.println("❌ RAIO-X ADMIN: Bloqueado. O email " + userDetails.getUsername() + " não existe na base de dados.");
+            return false;
+        }
+        
+        if (!user.get().isAdmin()) {
+            System.out.println("❌ RAIO-X ADMIN: Bloqueado. O utilizador " + user.get().getEmail() + " foi encontrado, mas a coluna 'is_admin' retornou FALSE no Java.");
+            return false;
+        }
+        
+        System.out.println("✅ RAIO-X ADMIN: Acesso Concedido com sucesso para: " + user.get().getEmail());
+        return true;
     }
 
-    // --- ROTAS DE CONFIGURAÇÃO DE PONTOS (AGORA POR FASE) ---
+    // --- ROTAS DE CONFIGURAÇÃO DE PONTOS ---
     @GetMapping("/configuracao/{fase}")
     public ResponseEntity<?> getConfiguracaoDaFase(@PathVariable String fase) {
         if (!isUserAdmin()) return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -58,14 +74,27 @@ public class AdminController {
 
     @PostMapping("/configuracao")
     public ResponseEntity<?> salvarConfiguracao(@RequestBody ConfiguracaoPontuacao novaConfig) {
-        if (!isUserAdmin()) return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        System.out.println(">>> TENTATIVA DE SALVAR REGRAS RECEBIDA PARA A FASE: " + novaConfig.getFase());
         
-        if (novaConfig.getFase() == null || novaConfig.getFase().isEmpty()) {
-            return ResponseEntity.badRequest().body("{\"erro\": \"Fase não especificada.\"}");
-        }
+        try {
+            if (!isUserAdmin()) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("{\"erro\": \"Falha de permissão.\"}");
+            }
+            
+            if (novaConfig.getFase() == null || novaConfig.getFase().isEmpty()) {
+                System.out.println("❌ ERRO: A fase enviada pelo Front-end está vazia.");
+                return ResponseEntity.badRequest().body("{\"erro\": \"Fase não especificada.\"}");
+            }
 
-        configRepository.save(novaConfig);
-        return ResponseEntity.ok("{\"mensagem\": \"Regras da fase atualizadas com sucesso!\"}");
+            configRepository.save(novaConfig);
+            System.out.println("✅ REGRAS SALVAS NO BANCO COM SUCESSO!");
+            return ResponseEntity.ok("{\"mensagem\": \"Regras da fase atualizadas com sucesso!\"}");
+            
+        } catch (Exception e) {
+            System.out.println("🚨 ERRO CRÍTICO AO SALVAR NO BANCO: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"erro\": \"Erro interno: " + e.getMessage() + "\"}");
+        }
     }
 
     // --- ROTA DE ENCERRAMENTO DE PARTIDA ---
