@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recuperar Senha - Bolão Ademicon</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        :root { --primary: #E31B23; --primary-hover: #b8141b; --bg-color: #F3F4F6; --card-bg: #ffffff; --text-dark: #0f172a; --text-muted: #475569; --border-light: #e2e8f0; --success: #059669; --success-bg: #ecfdf5; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-dark); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        .form-container { width: 100%; max-width: 420px; background: var(--card-bg); border-radius: 24px; padding: 40px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); border: 1px solid rgba(226,232,240,0.6); display: flex; flex-direction: column; align-items: center; }
+        .title-page { font-size: 1.5rem; font-weight: 800; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+        .desc-page { font-size: 0.9rem; color: var(--text-muted); text-align: center; margin-bottom: 25px; font-weight: 500; line-height: 1.5; }
+        .input-group { width: 100%; margin-bottom: 20px; }
+        .input-label { display: block; font-size: 0.85rem; font-weight: 700; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; }
+        .input-control { width: 100%; padding: 14px 16px; font-size: 1rem; font-weight: 600; color: var(--text-dark); background: #f8fafc; border: 2px solid var(--border-light); border-radius: 12px; outline: none; transition: 0.2s; }
+        .input-control:focus { background: white; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(227,27,35,0.1); }
+        .btn-ademicon { width: 100%; padding: 15px; font-size: 1.05rem; font-weight: 700; color: white; background-color: var(--primary); border: none; border-radius: 12px; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 12px rgba(227,27,35,0.2); display: flex; justify-content: center; align-items: center; gap: 8px; }
+        .btn-ademicon:hover:not(:disabled) { background-color: var(--primary-hover); transform: translateY(-2px); }
+        .btn-ademicon:disabled { opacity: 0.7; cursor: not-allowed; }
+        .link-secundario { font-size: 0.95rem; font-weight: 600; color: var(--text-muted); text-decoration: none; margin-top: 25px; }
+        .link-secundario:hover { color: var(--primary); }
+    </style>
+</head>
+<body>
+
+    <div class="form-container">
+        <h2 class="title-page"><i class="ph-bold ph-keyhole" style="color: var(--primary);"></i> Recuperar Senha</h2>
+        <p class="desc-page">Insira o e-mail cadastrado na sua conta. Enviaremos um link seguro para você criar uma nova senha.</p>
+
+        <form id="form-recuperar" style="width: 100%;">
+            <div class="input-group">
+                <label class="input-label" for="email">E-mail Cadastrado</label>
+                <input type="email" id="email" class="input-control" placeholder="exemplo@email.com" required maxlength="100">
+            </div>
+
+            <button type="submit" id="btn-submit" class="btn-ademicon">
+                Enviar Link de Resgate <i class="ph-bold ph-paper-plane-launch"></i>
+            </button>
+
+            <div style="text-align: center;">
+                <a href="/login.html" class="link-secundario">Voltar para o <strong>Login</strong></a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('form-recuperar').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btn-submit');
+            const emailVal = document.getElementById('email').value.trim();
+
+            btn.innerHTML = '<i class="ph-bold ph-spinner ph-spin"></i> Processando...';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/auth/recuperar-senha', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: emailVal })
+                });
+
+                if (res.ok) {
+                    btn.innerHTML = '<i class="ph-bold ph-check-circle"></i> E-mail Enviado!';
+                    btn.style.backgroundColor = 'var(--success)';
+                    alert("Se o e-mail inserido estiver correto, as instruções de redefinição chegarão em alguns instantes.");
+                } else {
+                    alert("Ocorreu uma falha no processamento. Tente novamente.");
+                    btn.innerHTML = 'Enviar Link de Resgate <i class="ph-bold ph-paper-plane-launch"></i>';
+                    btn.disabled = false;
+                }
+            } catch(err) {
+                alert("Erro de conexão com o Back-end.");
+                btn.innerHTML = 'Enviar Link de Resgate <i class="ph-bold ph-paper-plane-launch"></i>';
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

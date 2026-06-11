@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Comando - Bolão Ademicon</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        :root { --primary: #E31B23; --bg-color: #f1f5f9; --card-bg: #ffffff; --text-dark: #0f172a; --text-muted: #64748b; --border: #e2e8f0; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-dark); display: flex; min-height: 100vh; }
+
+        /* SIDEBAR ADMIN */
+        .sidebar { width: 280px; background: #0f172a; color: white; padding: 2rem 1.5rem; display: flex; flex-direction: column; gap: 2rem; box-shadow: 4px 0 15px rgba(0,0,0,0.1); z-index: 10; }
+        .brand { font-size: 1.4rem; font-weight: 800; display: flex; align-items: center; gap: 10px; color: #f8fafc; }
+        .nav-links { display: flex; flex-direction: column; gap: 8px; }
+        .nav-btn { background: transparent; color: #94a3b8; border: none; padding: 12px 16px; border-radius: 10px; text-align: left; font-size: 1.05rem; font-weight: 600; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 10px; }
+        .nav-btn:hover { background: rgba(255,255,255,0.05); color: white; }
+        .nav-btn.active { background: var(--primary); color: white; }
+        .back-btn { margin-top: auto; background: rgba(255,255,255,0.1); padding: 12px; text-align: center; border-radius: 8px; color: white; text-decoration: none; font-weight: 600; transition: 0.2s; }
+        .back-btn:hover { background: rgba(255,255,255,0.2); }
+
+        /* MAIN CONTENT */
+        .main-content { flex: 1; padding: 3rem; overflow-y: auto; }
+        .page-header { margin-bottom: 2rem; }
+        .page-title { font-size: 2rem; font-weight: 800; letter-spacing: -0.5px; }
+        .page-desc { color: var(--text-muted); }
+
+        .tab-content { display: none; animation: fadeIn 0.4s ease; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* CARDS & INPUTS */
+        .admin-card { background: var(--card-bg); border-radius: 16px; padding: 25px; box-shadow: 0 4px 15px -3px rgba(0,0,0,0.05); border: 1px solid var(--border); margin-bottom: 20px; }
+        
+        /* SELECT DE FASE */
+        .fase-selector { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+        .fase-selector select { padding: 12px 20px; font-size: 1.1rem; font-weight: 700; border-radius: 10px; border: 2px solid var(--border); background: #f8fafc; color: var(--text-dark); cursor: pointer; outline: none; }
+        .fase-selector select:focus { border-color: var(--primary); }
+
+        .config-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 20px; }
+        .input-group label { display: block; font-size: 0.9rem; font-weight: 700; color: var(--text-muted); margin-bottom: 8px; }
+        .input-group input { width: 100%; padding: 14px; font-size: 1.3rem; font-weight: 800; border-radius: 10px; border: 2px solid var(--border); background: #f8fafc; text-align: center; outline: none; transition: 0.2s; }
+        .input-group input:focus { border-color: var(--primary); background: white; }
+        
+        .btn-action { background: var(--primary); color: white; border: none; padding: 14px 24px; border-radius: 10px; font-size: 1rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s; box-shadow: 0 4px 12px rgba(227, 27, 35, 0.2); }
+        .btn-action:hover { background: #b8141b; transform: translateY(-2px); }
+
+        /* LISTA DE JOGOS */
+        .match-row { display: flex; justify-content: space-between; align-items: center; padding: 20px; border: 1px solid var(--border); border-radius: 12px; margin-bottom: 15px; background: white; }
+        .match-info h4 { font-size: 1.2rem; margin-bottom: 4px; }
+        .match-info span { font-size: 0.85rem; font-weight: 600; color: var(--primary); background: #fee2e2; padding: 4px 10px; border-radius: 8px; }
+        .score-inputs { display: flex; align-items: center; gap: 10px; }
+        .score-inputs input { width: 60px; height: 50px; text-align: center; font-size: 1.5rem; font-weight: 800; border: 2px solid var(--border); border-radius: 8px; outline: none; }
+        .score-inputs input:focus { border-color: var(--primary); }
+
+        /* Remove setinhas dos inputs number */
+        input[type="number"]::-webkit-inner-spin-button, 
+        input[type="number"]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            appearance: none; /* A propriedade padrão que o VS Code pediu */
+            margin: 0; 
+        }
+        input[type="number"] { 
+            -moz-appearance: textfield; 
+            appearance: textfield; /* A propriedade padrão que o VS Code pediu */
+            text-align: center;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="brand"><i class="ph-fill ph-shield-check"></i> Centro de Comando</div>
+        <div class="nav-links">
+            <button class="nav-btn active" onclick="switchAdminTab('jogos')"><i class="ph-bold ph-soccer-ball"></i> Encerrar Partidas</button>
+            <button class="nav-btn" onclick="switchAdminTab('regras')"><i class="ph-bold ph-sliders"></i> Regras de Pontos</button>
+        </div>
+        <a href="/index.html" class="back-btn"><i class="ph-bold ph-arrow-left"></i> Voltar ao Sistema</a>
+    </aside>
+
+    <main class="main-content">
+        
+        <div id="tab-jogos" class="tab-content active">
+            <div class="page-header">
+                <h1 class="page-title">Partidas Pendentes</h1>
+                <p class="page-desc">Lance o placar oficial para distribuir os pontos da rodada.</p>
+            </div>
+            <div id="lista-admin">
+                <p>A carregar jogos...</p>
+            </div>
+        </div>
+
+        <div id="tab-regras" class="tab-content">
+            <div class="page-header">
+                <h1 class="page-title">Engenharia de Pontuação</h1>
+                <p class="page-desc">Configure os pesos dos acertos de acordo com a fase do torneio.</p>
+            </div>
+            
+            <div class="admin-card">
+                <div class="fase-selector">
+                    <label style="font-weight: 700; color: var(--text-dark);">Selecione a Fase:</label>
+                    <select id="select-fase" onchange="carregarConfiguracao(this.value)">
+                        <option value="Fase de Grupos">Fase de Grupos</option>
+                        <option value="16 Avos de Final">16 Avos de Final</option>
+                        <option value="Oitavas de Final">Oitavas de Final</option>
+                        <option value="Quartas de Final">Quartas de Final</option>
+                        <option value="Semifinais">Semifinais</option>
+                        <option value="Final">Final</option>
+                    </select>
+                </div>
+
+                <div class="config-grid">
+                    <div class="input-group">
+                        <label>Placar Exato (Cheio)</label>
+                        <input type="number" id="cfg_exato" placeholder="Ex: 25">
+                    </div>
+                    <div class="input-group">
+                        <label>Acertou Vencedor/Empate</label>
+                        <input type="number" id="cfg_vencedor" placeholder="Ex: 10">
+                    </div>
+                    <div class="input-group">
+                        <label>Acertou Gols 1 Equipa</label>
+                        <input type="number" id="cfg_golo" placeholder="Ex: 5">
+                    </div>
+                </div>
+                <button class="btn-action" onclick="salvarConfiguracao()">
+                    <i class="ph-bold ph-floppy-disk"></i> Salvar Regras desta Fase
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            carregarJogosParaAdmin();
+            carregarConfiguracao(document.getElementById('select-fase').value);
+        });
+
+        function switchAdminTab(tabName) {
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+        }
+
+        // --- SISTEMA DE CONFIGURAÇÃO (POR FASE) ---
+        async function carregarConfiguracao(faseSelecionada) {
+            try {
+                // Envia a fase na URL
+                const res = await fetch(`/admin/configuracao/${encodeURIComponent(faseSelecionada)}`);
+                if (res.ok) {
+                    const config = await res.json();
+                    document.getElementById('cfg_exato').value = config.pontosPlacarExato;
+                    document.getElementById('cfg_vencedor').value = config.pontosVencedor;
+                    document.getElementById('cfg_golo').value = config.pontosGoloEquipa;
+                }
+            } catch(e) { console.error("Erro ao ler configurações"); }
+        }
+
+        async function salvarConfiguracao() {
+            const faseAtual = document.getElementById('select-fase').value;
+            const payload = {
+                fase: faseAtual,
+                pontosPlacarExato: parseInt(document.getElementById('cfg_exato').value),
+                pontosVencedor: parseInt(document.getElementById('cfg_vencedor').value),
+                pontosGoloEquipa: parseInt(document.getElementById('cfg_golo').value)
+            };
+            
+            try {
+                const btn = event.currentTarget;
+                btn.innerHTML = '<i class="ph-bold ph-spinner ph-spin"></i> Salvando...';
+                
+                const res = await fetch('/admin/configuracao', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (res.ok) {
+                    setTimeout(() => {
+                        alert(`Regras da fase [${faseAtual}] atualizadas com sucesso!`);
+                        btn.innerHTML = '<i class="ph-bold ph-floppy-disk"></i> Salvar Regras desta Fase';
+                    }, 500);
+                } else {
+                    alert("Falha de permissão.");
+                    btn.innerHTML = '<i class="ph-bold ph-floppy-disk"></i> Salvar Regras desta Fase';
+                }
+            } catch(e) { alert("Erro de conexão."); }
+        }
+
+        // --- SISTEMA DE GESTÃO DE PARTIDAS ---
+        async function carregarJogosParaAdmin() {
+            try {
+                const res = await fetch('/partidas');
+                const partidas = await res.json();
+                
+                const container = document.getElementById('lista-admin');
+                container.innerHTML = '';
+
+                const jogosAbertos = partidas.filter(p => !p.finalizada);
+
+                if(jogosAbertos.length === 0) {
+                    container.innerHTML = '<div class="admin-card" style="text-align: center; color: #64748b; font-weight: bold;">Nenhuma partida pendente de encerramento no momento.</div>';
+                    return;
+                }
+
+                jogosAbertos.forEach(p => {
+                    container.innerHTML += `
+                        <div class="match-row" id="card_${p.id}">
+                            <div class="match-info">
+                                <h4>${p.equipaA} vs ${p.equipaB}</h4>
+                                <span>${p.fase}</span>
+                            </div>
+                            <div class="score-inputs">
+                                <input type="number" id="realA_${p.id}" placeholder="0" min="0">
+                                <span style="color: #94a3b8; font-weight: bold;">X</span>
+                                <input type="number" id="realB_${p.id}" placeholder="0" min="0">
+                                <button class="btn-action" style="padding: 12px 20px; font-size: 0.9rem;" onclick="encerrarJogo(event, ${p.id})">Encerrar</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            } catch (e) {
+                alert("Erro ao carregar jogos ou acesso negado.");
+            }
+        }
+
+        async function encerrarJogo(event, idPartida) {
+            const btn = event.currentTarget;
+            const goloA = document.getElementById(`realA_${idPartida}`).value;
+            const goloB = document.getElementById(`realB_${idPartida}`).value;
+
+            if (goloA === '' || goloB === '') {
+                alert("Preencha o placar oficial completo!");
+                return;
+            }
+
+            if(confirm("ATENÇÃO: Encerrar a partida acionará o cálculo de pontos de todos os usuários baseado nas regras desta fase. Confirma?")) {
+                btn.innerHTML = '<i class="ph-bold ph-spinner ph-spin"></i>';
+                btn.disabled = true;
+
+                try {
+                    const resposta = await fetch(`/admin/partidas/${idPartida}/encerrar`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ golosEquipaA: parseInt(goloA), golosEquipaB: parseInt(goloB) })
+                    });
+
+                    if (resposta.ok) {
+                        document.getElementById(`card_${idPartida}`).style.display = 'none';
+                    } else {
+                        const err = await resposta.json();
+                        alert("Erro: " + err.erro);
+                        btn.innerHTML = 'Encerrar';
+                        btn.disabled = false;
+                    }
+                } catch (e) {
+                    alert("Erro crítico no servidor.");
+                    btn.innerHTML = 'Encerrar';
+                    btn.disabled = false;
+                }
+            }
+        }
+    </script>
+</body>
+</html>

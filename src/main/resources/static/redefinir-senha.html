@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nova Senha - Bolão Ademicon</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        :root { --primary: #E31B23; --primary-hover: #b8141b; --bg-color: #F3F4F6; --card-bg: #ffffff; --text-dark: #0f172a; --text-muted: #475569; --border-light: #e2e8f0; --danger: #dc2626; --danger-bg: #fef2f2; --success: #059669; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-dark); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        .form-container { width: 100%; max-width: 420px; background: var(--card-bg); border-radius: 24px; padding: 40px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); border: 1px solid rgba(226,232,240,0.6); display: flex; flex-direction: column; align-items: center; }
+        .title-page { font-size: 1.5rem; font-weight: 800; margin-bottom: 25px; display: flex; align-items: center; gap: 10px; }
+        .input-group { width: 100%; margin-bottom: 20px; }
+        .input-label { display: block; font-size: 0.85rem; font-weight: 700; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; }
+        .input-control { width: 100%; padding: 14px 16px; font-size: 1rem; font-weight: 600; color: var(--text-dark); background: #f8fafc; border: 2px solid var(--border-light); border-radius: 12px; outline: none; transition: 0.2s; }
+        .input-control:focus { background: white; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(227,27,35,0.1); }
+        .input-error { border-color: var(--danger) !important; background-color: var(--danger-bg) !important; }
+        .error-message { color: var(--danger); font-size: 0.85rem; font-weight: 700; margin-top: 8px; display: none; align-items: center; gap: 6px; background: var(--danger-bg); padding: 8px 12px; border-radius: 8px; border: 1px solid #fecaca; }
+        .btn-ademicon { width: 100%; padding: 15px; font-size: 1.05rem; font-weight: 700; color: white; background-color: var(--primary); border: none; border-radius: 12px; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 12px rgba(227,27,35,0.2); display: flex; justify-content: center; align-items: center; gap: 8px; }
+        .btn-ademicon:hover:not(:disabled) { background-color: var(--primary-hover); transform: translateY(-2px); }
+        .btn-ademicon:disabled { opacity: 0.7; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+
+    <div class="form-container">
+        <h2 class="title-page"><i class="ph-bold ph-lock-simple-open" style="color: var(--primary);"></i> Nova Senha</h2>
+
+        <form id="form-redefinir" style="width: 100%;">
+            <div class="input-group">
+                <label class="input-label" for="senha">Nova Senha</label>
+                <input type="password" id="senha" class="input-control" placeholder="Mínimo 6 caracteres" required minlength="6" maxlength="30">
+            </div>
+
+            <div class="input-group" style="margin-bottom: 10px;">
+                <label class="input-label" for="confirmar_senha">Confirme a Nova Senha</label>
+                <input type="password" id="confirmar_senha" class="input-control" placeholder="Repita a senha digitada acima" required minlength="6" maxlength="30">
+            </div>
+
+            <div id="erro-senha" class="error-message">
+                <i class="ph-bold ph-warning-circle" style="font-size: 1.2rem;"></i> As senhas não coincidem.
+            </div>
+
+            <button type="submit" id="btn-submit" class="btn-ademicon" style="margin-top: 25px;">
+                Atualizar Minha Senha <i class="ph-bold ph-shield-check"></i>
+            </button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('form-redefinir').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const btn = document.getElementById('btn-submit');
+            const senha = document.getElementById('senha');
+            const confirmarSenha = document.getElementById('confirmar_senha');
+            const erroMsg = document.getElementById('erro-senha');
+
+            // Captura o token contido na URL do navegador
+            const urlParams = new URLSearchParams(window.location.search);
+            const tokenVal = urlParams.get('token');
+
+            if (!tokenVal) {
+                alert("Token de segurança ausente. Use o link enviado ao seu e-mail.");
+                return;
+            }
+
+            if (senha.value !== confirmarSenha.value) {
+                confirmarSenha.classList.add('input-error');
+                senha.classList.add('input-error');
+                erroMsg.style.display = 'flex';
+                confirmarSenha.addEventListener('input', () => {
+                    senha.classList.remove('input-error');
+                    confirmarSenha.classList.remove('input-error');
+                    erroMsg.style.display = 'none';
+                });
+                return;
+            }
+
+            btn.innerHTML = '<i class="ph-bold ph-spinner ph-spin"></i> Atualizando...';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/auth/redefinir-senha', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token: tokenVal, senha: senha.value })
+                });
+
+                if (res.ok) {
+                    btn.innerHTML = '<i class="ph-bold ph-check"></i> Senha Alterada!';
+                    btn.style.backgroundColor = 'var(--success)';
+                    setTimeout(() => { window.location.href = '/login.html'; }, 1500);
+                } else {
+                    const data = await res.json();
+                    alert(data.erro || "Falha ao redefinir.");
+                    btn.innerHTML = 'Atualizar Minha Senha <i class="ph-bold ph-shield-check"></i>';
+                    btn.disabled = false;
+                }
+            } catch(err) {
+                alert("Erro de conexão.");
+                btn.innerHTML = 'Atualizar Minha Senha <i class="ph-bold ph-shield-check"></i>';
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

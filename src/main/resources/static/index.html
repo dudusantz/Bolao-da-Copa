@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bolão Ademicon</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <style>
+        :root {
+            --primary: #E31B23;
+            --primary-hover: #b8141b;
+            --bg-color: #F3F4F6;
+            --card-bg: #ffffff;
+            --text-dark: #0f172a; 
+            --text-muted: #475569; 
+            --border-light: #e2e8f0;
+            --border-focus: #cbd5e1;
+            --success: #059669;
+            --success-bg: #ecfdf5;
+            --warning: #d97706;
+            --warning-bg: #fffbeb;
+            --danger: #dc2626;
+            --danger-bg: #fef2f2;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-dark); padding-bottom: 80px; -webkit-font-smoothing: antialiased; }
+
+        /* HEADER PREMIUM */
+        .navbar { background: linear-gradient(135deg, var(--primary) 0%, #a11118 100%); padding: 1.2rem 2rem; color: white; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 20px rgba(227, 27, 35, 0.25); position: sticky; top: 0; z-index: 50; }
+        .brand { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px; display: flex; align-items: center; gap: 10px;}
+        .user-panel { display: flex; align-items: center; gap: 20px; font-weight: 600; font-size: 0.95rem;}
+        .pts-badge { background: rgba(255,255,255,0.2); padding: 6px 14px; border-radius: 20px; backdrop-filter: blur(4px); display: flex; align-items: center; gap: 6px; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.1); }
+        .btn-logout { background: white; color: var(--primary); border: none; padding: 8px 18px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
+        .btn-logout:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+
+        /* TABS MODERNAS */
+        .tabs { background: var(--card-bg); padding: 0 2rem; display: flex; gap: 2.5rem; border-bottom: 1px solid var(--border-light); overflow-x: auto; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); }
+        .tab-btn { background: none; border: none; padding: 1.5rem 0; font-size: 1rem; font-weight: 600; color: var(--text-muted); cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.3s; white-space: nowrap; display: flex; align-items: center; gap: 8px; position: relative; }
+        .tab-btn i { font-size: 1.3rem; }
+        .tab-btn:hover { color: var(--primary); }
+        .tab-btn.active { color: var(--primary); }
+        .tab-btn.active::after { content: ''; position: absolute; bottom: -1px; left: 0; width: 100%; height: 3px; background-color: var(--primary); border-radius: 3px 3px 0 0; }
+
+        /* CONTAINERS & GRID */
+        .container { max-width: 1200px; margin: 2.5rem auto; padding: 0 1.5rem; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .grid-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.8rem; }
+
+        @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .match-card { animation: fadeSlideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) both; }
+
+        /* CARD DE JOGO */
+        .match-card { background: var(--card-bg); border-radius: 20px; padding: 1.8rem; box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05); border: 1px solid rgba(226, 232, 240, 0.6); transition: all 0.3s ease; display: flex; flex-direction: column; justify-content: space-between;}
+        .match-card:hover { transform: translateY(-5px); box-shadow: 0 12px 25px -5px rgba(0, 0, 0, 0.1); border-color: var(--border-focus); }
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.8rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-light); }
+        .match-info-group { display: flex; flex-direction: column; gap: 6px; }
+        .fase-badge { font-size: 0.75rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; }
+        .date-badge { font-size: 0.85rem; font-weight: 600; color: var(--text-dark); display: flex; align-items: center; gap: 6px; }
+        .date-badge i { color: var(--primary); font-size: 1.1rem;}
+        .status-badge { font-size: 0.75rem; font-weight: 700; padding: 6px 12px; border-radius: 20px; display: inline-flex; align-items: center; gap: 4px; }
+        .status-open { background: var(--success-bg); color: var(--success); }
+
+        /* PLACAR & EQUIPAS */
+        .teams-container { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 15px; margin-bottom: 1.8rem; }
+        .team { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 10px; height: 100%; }
+        .team img { width: 56px; height: 40px; object-fit: cover; border-radius: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); transition: transform 0.2s; }
+        .team img:hover { transform: scale(1.05); }
+        .team-name { font-weight: 700; font-size: 1rem; text-align: center; line-height: 1.2; color: var(--text-dark); }
+        .score-board { display: flex; align-items: center; justify-content: center; gap: 12px; }
+        .score-input { width: 54px; height: 60px; background: #f8fafc; border: 2px solid var(--border-light); border-radius: 12px; text-align: center; font-size: 1.6rem; font-weight: 800; color: var(--text-dark); transition: all 0.2s ease-out; outline: none; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
+        .score-input:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 0 4px rgba(227, 27, 35, 0.1); transform: translateY(-2px); }
+        .score-input.saved-guess { background: var(--success-bg); border-color: #6ee7b7; color: var(--success); }
+        .score-separator { font-weight: 800; font-size: 1.2rem; color: var(--text-muted); opacity: 0.5; }
+
+        /* BOTÕES DE AÇÃO */
+        .btn-action { width: 100%; padding: 14px; border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.2s ease; border: none; display: flex; justify-content: center; align-items: center; gap: 8px; }
+        .btn-save { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(227, 27, 35, 0.2); }
+        .btn-save:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 6px 15px rgba(227, 27, 35, 0.3); }
+        .btn-edit { background: transparent; color: var(--text-muted); border: 2px solid var(--border-light); }
+        .btn-edit:hover { border-color: var(--primary); color: var(--primary); background: #fffafb; transform: translateY(-2px); }
+        .btn-disabled { background: var(--border-light); color: #94a3b8; cursor: not-allowed; }
+
+        /* =========================================
+           RANKING PREMIUM BLINDADO
+           ========================================= */
+        .ranking-wrapper { max-width: 700px; margin: 0 auto; padding-bottom: 2rem; }
+        .ranking-header { text-align: center; margin-bottom: 2.5rem; }
+        .ranking-header h2 { font-size: 1.8rem; color: var(--text-dark); display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 800; }
+        .ranking-header p { color: var(--text-muted); font-size: 0.95rem; font-weight: 500; margin-top: 5px; }
+
+        .rank-item { 
+            display: flex; align-items: center; justify-content: space-between; 
+            padding: 16px 24px; margin-bottom: 12px; 
+            background: var(--card-bg); border-radius: 16px; 
+            border: 1px solid var(--border-light); 
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
+            transition: transform 0.2s, box-shadow 0.2s;
+            animation: fadeSlideUp 0.4s ease forwards;
+            opacity: 0;
+        }
+        .rank-item:hover { transform: translateY(-2px); box-shadow: 0 10px 20px -5px rgba(0,0,0,0.08); border-color: var(--border-focus); }
+
+        .rank-left { display: flex; align-items: center; gap: 20px; }
+        
+        .rank-badge { 
+            width: 44px; height: 44px; border-radius: 12px; 
+            background: #f1f5f9; color: var(--text-muted); 
+            display: flex; align-items: center; justify-content: center; 
+            font-size: 1.2rem; font-weight: 800; 
+        }
+        
+        .rank-p1 .rank-badge { background: linear-gradient(135deg, #FDE047, #F59E0B); color: white; box-shadow: 0 4px 10px rgba(245, 158, 11, 0.3); font-size: 1.4rem; }
+        .rank-p2 .rank-badge { background: linear-gradient(135deg, #E2E8F0, #94A3B8); color: white; box-shadow: 0 4px 10px rgba(148, 163, 184, 0.3); font-size: 1.3rem; }
+        .rank-p3 .rank-badge { background: linear-gradient(135deg, #FDBA74, #B45309); color: white; box-shadow: 0 4px 10px rgba(180, 83, 9, 0.3); font-size: 1.3rem; }
+
+        .rank-user-info { display: flex; flex-direction: column; }
+        .rank-name { font-weight: 700; font-size: 1.15rem; color: var(--text-dark); display: flex; align-items: center; gap: 8px; line-height: 1.2; }
+        .rank-tag { font-size: 0.65rem; font-weight: 800; background: var(--primary); color: white; padding: 4px 8px; border-radius: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        .rank-score { display: flex; flex-direction: column; align-items: flex-end; }
+        .rank-pts-val { font-size: 1.6rem; font-weight: 800; color: var(--text-dark); line-height: 1; }
+        .rank-p1 .rank-pts-val { color: #F59E0B; }
+        .rank-pts-lbl { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
+
+        .rank-me { border: 2px solid var(--primary); background: #fffafb; }
+        .rank-me .rank-pts-val { color: var(--primary); }
+
+        /* Remove setinhas dos inputs number */
+        input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; appearance: none; margin: 0; }
+        input[type="number"] { -moz-appearance: textfield; appearance: textfield; text-align: center; padding: 0; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="brand"><i class="ph-fill ph-trophy"></i> Bolão Ademicon</div>
+        <div class="user-panel">
+            <a href="/admin.html" id="btn-admin-panel" style="display: none; background: white; color: var(--primary); padding: 6px 14px; border-radius: 8px; font-weight: 800; text-decoration: none; align-items: center; gap: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);"><i class="ph-bold ph-gear"></i> Admin</a>
+            <span class="user-name-wrapper"><i class="ph-fill ph-user-circle"></i> <span id="header-nome">...</span></span>
+            <span class="pts-badge"><i class="ph-fill ph-star"></i> <span id="header-pontos">0 pts</span></span>
+            <button class="btn-logout" onclick="fazerLogout()"><i class="ph-bold ph-sign-out"></i> Sair</button>
+        </div>
+    </nav>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('jogos')"><i class="ph-bold ph-soccer-ball"></i> Jogos da Rodada</button>
+        <button class="tab-btn" onclick="switchTab('historico')"><i class="ph-bold ph-chart-line-up"></i> Meus Resultados</button>
+        <button class="tab-btn" onclick="switchTab('ranking')"><i class="ph-bold ph-medal"></i> Ranking Geral</button>
+    </div>
+
+    <div class="container">
+        <div id="tab-jogos" class="tab-content active">
+            <div class="grid-cards" id="lista-jogos-abertos"></div>
+        </div>
+        <div id="tab-historico" class="tab-content">
+            <div class="grid-cards" id="lista-historico"></div>
+        </div>
+        <div id="tab-ranking" class="tab-content">
+            <div id="lista-ranking"></div>
+        </div>
+    </div>
+
+    <script>
+        const flags = {
+            'México': 'mx', 'África do Sul': 'za', 'Coreia do Sul': 'kr', 'República Tcheca': 'cz',
+            'Canadá': 'ca', 'Bósnia e Herzegovina': 'ba', 'Catar': 'qa', 'Suíça': 'ch',
+            'Brasil': 'br', 'Marrocos': 'ma', 'Haiti': 'ht', 'Escócia': 'gb-sct',
+            'EUA': 'us', 'Paraguai': 'py', 'Austrália': 'au', 'Turquia': 'tr',
+            'Alemanha': 'de', 'Curaçao': 'cw', 'Costa do Marfim': 'ci', 'Equador': 'ec',
+            'Holanda': 'nl', 'Japão': 'jp', 'Suécia': 'se', 'Tunísia': 'tn',
+            'Bélgica': 'be', 'Egito': 'eg', 'Irã': 'ir', 'Nova Zelândia': 'nz',
+            'Espanha': 'es', 'Cabo Verde': 'cv', 'Arábia Saudita': 'sa', 'Uruguai': 'uy',
+            'França': 'fr', 'Senegal': 'sn', 'Iraque': 'iq', 'Noruega': 'no',
+            'Argentina': 'ar', 'Argélia': 'dz', 'Áustria': 'at', 'Jordânia': 'jo',
+            'Portugal': 'pt', 'Congo DR': 'cd', 'Uzbequistão': 'uz', 'Colômbia': 'co',
+            'Inglaterra': 'gb-eng', 'Croácia': 'hr', 'Gana': 'gh', 'Panamá': 'pa'
+        };
+
+        function getFlagUrl(teamName) {
+            const code = flags[teamName] || 'un';
+            return `https://flagcdn.com/w80/${code}.png`;
+        }
+
+        function formatarDataHora(dataString) {
+            if (!dataString) return 'Data a definir';
+            const data = new Date(dataString);
+            const dia = String(data.getDate()).padStart(2, '0');
+            const mes = String(data.getMonth() + 1).padStart(2, '0');
+            const horas = String(data.getHours()).padStart(2, '0');
+            const minutos = String(data.getMinutes()).padStart(2, '0');
+            return `${dia}/${mes} às ${horas}:${minutos}`;
+        }
+
+        let usuarioLogado = null;
+        let partidasGlobais = [];
+        let meusPalpitesGlobais = [];
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await carregarSessao();
+            await carregarDadosDoPainel();
+        });
+
+        async function carregarSessao() {
+            try {
+                const res = await fetch('/api/auth/me');
+                if (!res.ok) throw new Error();
+                usuarioLogado = await res.json();
+                document.getElementById('header-nome').innerText = usuarioLogado.nome;
+                document.getElementById('header-pontos').innerText = `${usuarioLogado.pontos} pts`;
+
+                if (usuarioLogado.admin) {
+                    document.getElementById('btn-admin-panel').style.display = 'flex';
+                }
+            } catch (e) {
+                window.location.href = '/login.html';
+            }
+        }
+
+        async function carregarDadosDoPainel() {
+            try {
+                const [resPartidas, resPalpites] = await Promise.all([
+                    fetch('/partidas'),
+                    fetch('/palpites/meus')
+                ]);
+                partidasGlobais = await resPartidas.json();
+                meusPalpitesGlobais = await resPalpites.json();
+
+                renderizarJogosAbertos();
+                renderizarHistorico();
+            } catch (erro) {
+                console.error("Erro ao carregar dados", erro);
+            }
+        }
+
+        function renderizarJogosAbertos() {
+            const container = document.getElementById('lista-jogos-abertos');
+            container.innerHTML = '';
+
+            const jogosAbertos = partidasGlobais
+                .filter(p => !p.finalizada)
+                .sort((a, b) => new Date(a.dataHoraDoJogo) - new Date(b.dataHoraDoJogo));
+
+            if (jogosAbertos.length === 0) {
+                container.innerHTML = '<div style="text-align:center; grid-column: 1 / -1; padding: 3rem; background: var(--card-bg); border-radius: 20px; box-shadow: 0 4px 20px -2px rgba(0,0,0,0.05);"><i class="ph-bold ph-calendar-x" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem;"></i><h3 style="color: var(--text-dark);">Nenhum jogo pendente</h3><p style="color: var(--text-muted);">Todos os jogos da rodada foram encerrados ou finalizados.</p></div>';
+                return;
+            }
+
+            const agora = new Date();
+
+            jogosAbertos.forEach((partida, index) => {
+                const meuPalpite = meusPalpitesGlobais.find(p => p.partida.id === partida.id);
+                const isSaved = !!meuPalpite;
+                const valorA = isSaved ? meuPalpite.golosEquipaA : '';
+                const valorB = isSaved ? meuPalpite.golosEquipaB : '';
+                const dataDoJogo = new Date(partida.dataHoraDoJogo);
+                const apostasEncerradas = agora >= dataDoJogo;
+
+                let htmlBadge, htmlInputs, htmlBotao, inputSavedClass;
+
+                if (apostasEncerradas) {
+                    htmlBadge = '<span class="status-badge" style="background: var(--warning-bg); color: var(--warning);"><i class="ph-bold ph-lock-key"></i> Fechado</span>';
+                    htmlInputs = 'disabled style="background: #f1f5f9; border-color: #e2e8f0; color: #94a3b8; cursor: not-allowed;"';
+                    htmlBotao = '<button class="btn-action btn-disabled" disabled><i class="ph-bold ph-prohibit"></i> Tempo Esgotado</button>';
+                    inputSavedClass = '';
+                } else {
+                    const iconBotao = isSaved ? '<i class="ph-bold ph-arrows-clockwise"></i>' : '<i class="ph-bold ph-check-circle"></i>';
+                    const textoBotao = isSaved ? 'Atualizar Palpite' : 'Salvar Palpite';
+                    const classeBotao = isSaved ? 'btn-edit' : 'btn-save';
+                    inputSavedClass = isSaved ? 'saved-guess' : '';
+                    htmlBadge = isSaved 
+                        ? '<span class="status-badge" style="background: var(--success-bg); color: var(--success);"><i class="ph-bold ph-check-circle"></i> Palpite Salvo</span>'
+                        : '<span class="status-badge status-open"><i class="ph-bold ph-circle-dashed"></i> Aberta</span>';
+                    htmlInputs = ''; 
+                    htmlBotao = `<button class="btn-action ${classeBotao}" onclick="salvarPalpite(event, ${partida.id})">${iconBotao} ${textoBotao}</button>`;
+                }
+
+                const div = document.createElement('div');
+                div.className = 'match-card';
+                div.setAttribute('data-hora-jogo', partida.dataHoraDoJogo);
+                div.style.animationDelay = `${index * 0.05}s`;
+                
+                div.innerHTML = `
+                    <div class="card-header">
+                        <div class="match-info-group">
+                            <span class="fase-badge">${partida.fase}</span>
+                            <span class="date-badge"><i class="ph-bold ph-calendar-blank"></i> ${formatarDataHora(partida.dataHoraDoJogo)}</span>
+                        </div>
+                        ${htmlBadge}
+                    </div>
+                    <div class="teams-container">
+                        <div class="team">
+                            <img src="${getFlagUrl(partida.equipaA)}" alt="${partida.equipaA}" loading="lazy">
+                            <span class="team-name">${partida.equipaA}</span>
+                        </div>
+                        <div class="score-board">
+                            <input type="number" id="goloA_${partida.id}" class="score-input ${inputSavedClass}" min="0" value="${valorA}" ${htmlInputs}>
+                            <span class="score-separator">X</span>
+                            <input type="number" id="goloB_${partida.id}" class="score-input ${inputSavedClass}" min="0" value="${valorB}" ${htmlInputs}>
+                        </div>
+                        <div class="team">
+                            <img src="${getFlagUrl(partida.equipaB)}" alt="${partida.equipaB}" loading="lazy">
+                            <span class="team-name">${partida.equipaB}</span>
+                        </div>
+                    </div>
+                    ${htmlBotao}
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function renderizarHistorico() {
+            const container = document.getElementById('lista-historico');
+            container.innerHTML = '';
+            const jogosFechados = partidasGlobais.filter(p => p.finalizada).sort((a, b) => new Date(b.dataHoraDoJogo) - new Date(a.dataHoraDoJogo));
+
+            if (jogosFechados.length === 0) {
+                 container.innerHTML = '<div style="text-align:center; grid-column: 1 / -1; padding: 3rem; background: var(--card-bg); border-radius: 20px; box-shadow: 0 4px 20px -2px rgba(0,0,0,0.05);"><i class="ph-bold ph-clock-counter-clockwise" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem;"></i><h3 style="color: var(--text-dark);">Sem histórico</h3><p style="color: var(--text-muted);">Ainda não tens resultados de jogos finalizados.</p></div>';
+                 return;
+            }
+
+            jogosFechados.forEach((partida, index) => {
+                const meuPalpite = meusPalpitesGlobais.find(p => p.partida.id === partida.id);
+                if (!meuPalpite) return; 
+
+                const acertouAlgo = meuPalpite.pontosGanhos > 0;
+                const bgBadge = acertouAlgo ? 'background: var(--success-bg); color: var(--success);' : 'background: var(--danger-bg); color: var(--danger);';
+                const txtBadge = acertouAlgo ? `+${meuPalpite.pontosGanhos} pts` : '0 pts';
+                const iconBadge = acertouAlgo ? 'ph-trend-up' : 'ph-trend-down';
+
+                const div = document.createElement('div');
+                div.className = 'match-card';
+                div.style.animationDelay = `${index * 0.05}s`;
+
+                div.innerHTML = `
+                    <div class="card-header">
+                        <div class="match-info-group">
+                            <span class="fase-badge">${partida.fase}</span>
+                            <span class="date-badge"><i class="ph-bold ph-flag-checkered"></i> Resultado Final</span>
+                        </div>
+                        <span class="status-badge" style="${bgBadge}; font-size: 0.9rem;"><i class="ph-bold ${iconBadge}"></i> ${txtBadge}</span>
+                    </div>
+                    <div class="teams-container" style="margin-bottom: 0;">
+                        <div class="team">
+                            <img src="${getFlagUrl(partida.equipaA)}" alt="${partida.equipaA}" loading="lazy">
+                            <span class="team-name">${partida.equipaA}</span>
+                        </div>
+                        <div class="team" style="flex: 2; gap: 4px;">
+                            <div style="font-size: 2.2rem; font-weight: 800; color: var(--text-dark); letter-spacing: 2px;">${partida.golosEquipaA} - ${partida.golosEquipaB}</div>
+                            <div style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600; background: #f1f5f9; padding: 4px 12px; border-radius: 12px;">Teu palpite: ${meuPalpite.golosEquipaA} x ${meuPalpite.golosEquipaB}</div>
+                        </div>
+                        <div class="team">
+                            <img src="${getFlagUrl(partida.equipaB)}" alt="${partida.equipaB}" loading="lazy">
+                            <span class="team-name">${partida.equipaB}</span>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        async function salvarPalpite(event, idPartida) {
+            event.preventDefault(); 
+            const btn = event.currentTarget;
+            const textoOriginal = btn.innerHTML;
+            btn.innerHTML = '<i class="ph-bold ph-spinner ph-spin"></i> Salvando...';
+            btn.style.opacity = '0.8';
+            btn.disabled = true;
+
+            const goloA = document.getElementById(`goloA_${idPartida}`).value;
+            const goloB = document.getElementById(`goloB_${idPartida}`).value;
+
+            if (goloA === '' || goloB === '') {
+                alert("Preencha o placar completo!");
+                btn.innerHTML = textoOriginal;
+                btn.disabled = false;
+                btn.style.opacity = '1';
+                return;
+            }
+
+            const payload = { golosEquipaA: parseInt(goloA), golosEquipaB: parseInt(goloB), partida: { id: idPartida } };
+            const palpiteExistente = meusPalpitesGlobais.find(p => p.partida.id === idPartida);
+            if (palpiteExistente) payload.id = palpiteExistente.id;
+
+            try {
+                const resposta = await fetch('/palpites', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                if (resposta.ok) {
+                    await carregarDadosDoPainel(); 
+                } else {
+                    const err = await resposta.json();
+                    alert("Erro: " + (err.erro || "Falha ao salvar"));
+                    btn.innerHTML = textoOriginal;
+                    btn.disabled = false;
+                    btn.style.opacity = '1';
+                }
+            } catch (erro) {
+                alert("Erro de conexão com o servidor.");
+                btn.innerHTML = textoOriginal;
+                btn.disabled = false;
+                btn.style.opacity = '1';
+            }
+        }
+
+        async function carregarRankingReal() {
+            try {
+                const res = await fetch('/usuarios/ranking');
+                const ranking = await res.json();
+                
+                const container = document.getElementById('lista-ranking');
+                
+                container.innerHTML = `
+                    <div class="ranking-wrapper">
+                        <div class="ranking-header">
+                            <h2><i class="ph-fill ph-trophy" style="color: #F59E0B;"></i> Ranking Geral</h2>
+                            <p>Os maiores estrategistas do Bolão Ademicon</p>
+                        </div>
+                        <div id="ranking-rows-container"></div>
+                    </div>
+                `;
+
+                const rowsContainer = document.getElementById('ranking-rows-container');
+
+                ranking.forEach((user, index) => {
+                    const pos = index + 1;
+                    const cssPos = pos === 1 ? 'rank-p1' : pos === 2 ? 'rank-p2' : pos === 3 ? 'rank-p3' : '';
+                    const destaqueClass = user.id === usuarioLogado.id ? 'rank-me' : '';
+                    
+                    let medalIcon = '';
+                    if (pos === 1) medalIcon = '<i class="ph-fill ph-medal" style="color: #F59E0B; font-size: 1.3rem;"></i>';
+                    else if (pos === 2) medalIcon = '<i class="ph-fill ph-medal" style="color: #94A3B8; font-size: 1.3rem;"></i>';
+                    else if (pos === 3) medalIcon = '<i class="ph-fill ph-medal" style="color: #B45309; font-size: 1.3rem;"></i>';
+
+                    const euTag = user.id === usuarioLogado.id ? '<span class="rank-tag">Você</span>' : '';
+
+                    rowsContainer.innerHTML += `
+                        <div class="rank-item ${cssPos} ${destaqueClass}" style="animation-delay: ${index * 0.1}s">
+                            <div class="rank-left">
+                                <div class="rank-badge">${pos}º</div>
+                                <div class="rank-user-info">
+                                    <div class="rank-name">${user.nome} ${medalIcon} ${euTag}</div>
+                                </div>
+                            </div>
+                            <div class="rank-score">
+                                <span class="rank-pts-val">${user.pontos}</span>
+                                <span class="rank-pts-lbl">pontos</span>
+                            </div>
+                        </div>
+                    `;
+                });
+            } catch (e) {
+                console.error("Erro ao carregar o ranking", e);
+            }
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+            if(tabName === 'ranking') carregarRankingReal();
+        }
+
+        function fazerLogout() {
+            document.cookie = "JSESSIONID=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            window.location.href = '/login.html';
+        }
+
+        setInterval(() => {
+            const agora = new Date();
+            document.querySelectorAll('.match-card[data-hora-jogo]').forEach(card => {
+                const dataJogo = new Date(card.getAttribute('data-hora-jogo'));
+                const btn = card.querySelector('.btn-action');
+                if (agora >= dataJogo && btn && !btn.disabled) {
+                    card.querySelectorAll('.score-input').forEach(input => {
+                        input.disabled = true;
+                        input.style.background = '#f1f5f9';
+                        input.style.borderColor = '#e2e8f0';
+                        input.style.color = '#94a3b8';
+                        input.style.cursor = 'not-allowed';
+                    });
+                    btn.disabled = true;
+                    btn.className = 'btn-action btn-disabled';
+                    btn.innerHTML = '<i class="ph-bold ph-prohibit"></i> Tempo Esgotado';
+                    const badge = card.querySelector('.status-open') || card.querySelector('.status-badge');
+                    if (badge) {
+                        badge.className = 'status-badge';
+                        badge.style.background = 'var(--warning-bg)';
+                        badge.style.color = 'var(--warning)';
+                        badge.innerHTML = '<i class="ph-bold ph-lock-key"></i> Fechado';
+                    }
+                }
+            });
+        }, 15000);
+    </script>
+</body>
+</html>
