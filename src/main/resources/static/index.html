@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bolão Ademicon</title>
+    <title>Bolão Ademicon - Dashboard</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -12,17 +12,17 @@
         :root {
             --primary: #E31B23;
             --primary-hover: #b8141b;
-            --bg-color: #F3F4F6;
+            --bg-color: #f8fafc;
             --card-bg: #ffffff;
             --text-dark: #0f172a; 
-            --text-muted: #475569; 
+            --text-muted: #64748b; 
             --border-light: #e2e8f0;
             --border-focus: #cbd5e1;
             --success: #059669;
             --success-bg: #ecfdf5;
             --warning: #d97706;
             --warning-bg: #fffbeb;
-            --danger: #dc2626;
+            --danger: #ef4444;
             --danger-bg: #fef2f2;
         }
 
@@ -31,32 +31,36 @@
 
         /* HEADER PREMIUM */
         .navbar { background: linear-gradient(135deg, var(--primary) 0%, #a11118 100%); padding: 1.2rem 2rem; color: white; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 20px rgba(227, 27, 35, 0.25); position: sticky; top: 0; z-index: 50; flex-wrap: wrap; gap: 10px;}
-        .brand { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px; display: flex; align-items: center; gap: 10px;}
-        .user-panel { display: flex; align-items: center; gap: 20px; font-weight: 600; font-size: 0.95rem; flex-wrap: wrap; justify-content: center;}
-        .pts-badge { background: rgba(255,255,255,0.2); padding: 6px 14px; border-radius: 20px; backdrop-filter: blur(4px); display: flex; align-items: center; gap: 6px; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.1); }
-        .btn-logout { background: white; color: var(--primary); border: none; padding: 8px 18px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
-        .btn-logout:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .brand { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.5px; display: flex; align-items: center; gap: 10px;}
+        .user-panel { display: flex; align-items: center; gap: 15px; font-weight: 600; font-size: 0.95rem; flex-wrap: wrap; justify-content: center;}
+        
+        .pts-badge { background: rgba(255,255,255,0.15); padding: 8px 16px; border-radius: 20px; backdrop-filter: blur(8px); display: flex; align-items: center; gap: 6px; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.2); font-weight: 800; font-size: 1rem; color: #FFD700; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .pts-badge i { font-size: 1.2rem; }
+        
+        .btn-logout { background: rgba(255,255,255,0.1); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
+        .btn-logout:hover { background: white; color: var(--primary); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
 
-        /* TABS MODERNAS */
-        .tabs { background: var(--card-bg); padding: 0 2rem; display: flex; gap: 2.5rem; border-bottom: 1px solid var(--border-light); overflow-x: auto; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); }
-        .tab-btn { background: none; border: none; padding: 1.5rem 0; font-size: 1rem; font-weight: 600; color: var(--text-muted); cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.3s; white-space: nowrap; display: flex; align-items: center; gap: 8px; position: relative; }
-        .tab-btn i { font-size: 1.3rem; }
-        .tab-btn:hover { color: var(--primary); }
-        .tab-btn.active { color: var(--primary); }
-        .tab-btn.active::after { content: ''; position: absolute; bottom: -1px; left: 0; width: 100%; height: 3px; background-color: var(--primary); border-radius: 3px 3px 0 0; }
+        /* TABS MODERNAS (TIPO PILL E STICKY) */
+        .tabs-container { background: var(--card-bg); padding: 12px 2rem; border-bottom: 1px solid var(--border-light); position: sticky; top: 76px; z-index: 40; box-shadow: 0 4px 15px -5px rgba(0,0,0,0.05); }
+        .tabs { display: flex; gap: 1rem; overflow-x: auto; max-width: 1200px; margin: 0 auto; scrollbar-width: none; }
+        .tabs::-webkit-scrollbar { display: none; }
+        .tab-btn { background: transparent; border: none; padding: 10px 20px; font-size: 0.95rem; font-weight: 600; color: var(--text-muted); cursor: pointer; border-radius: 12px; transition: all 0.3s ease; white-space: nowrap; display: flex; align-items: center; gap: 8px; }
+        .tab-btn i { font-size: 1.2rem; }
+        .tab-btn:hover { background: #f1f5f9; color: var(--text-dark); }
+        .tab-btn.active { background: var(--danger-bg); color: var(--primary); box-shadow: inset 0 0 0 1px rgba(227, 27, 35, 0.1); }
 
         /* CONTAINERS & GRID */
-        .container { max-width: 1200px; margin: 2.5rem auto; padding: 0 1.5rem; }
+        .container { max-width: 1200px; margin: 2rem auto; padding: 0 1.5rem; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         .grid-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.8rem; }
 
         @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .match-card { animation: fadeSlideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) both; }
+        .match-card { animation: fadeSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
 
-        /* CARD DE JOGO */
-        .match-card { background: var(--card-bg); border-radius: 20px; padding: 1.8rem; box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05); border: 1px solid rgba(226, 232, 240, 0.6); transition: all 0.3s ease; display: flex; flex-direction: column; justify-content: space-between;}
-        .match-card:hover { transform: translateY(-5px); box-shadow: 0 12px 25px -5px rgba(0, 0, 0, 0.1); border-color: var(--border-focus); }
+        /* CARD DE JOGO PREMIUM */
+        .match-card { background: var(--card-bg); border-radius: 20px; padding: 1.8rem; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); border: 1px solid rgba(226, 232, 240, 0.8); transition: all 0.3s ease; display: flex; flex-direction: column; justify-content: space-between;}
+        .match-card:hover { transform: translateY(-5px); box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.1); border-color: var(--border-focus); }
         .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.8rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-light); }
         .match-info-group { display: flex; flex-direction: column; gap: 6px; }
         .fase-badge { font-size: 0.75rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; }
@@ -72,15 +76,15 @@
         .team img:hover { transform: scale(1.05); }
         .team-name { font-weight: 700; font-size: 1rem; text-align: center; line-height: 1.2; color: var(--text-dark); }
         .score-board { display: flex; align-items: center; justify-content: center; gap: 12px; }
-        .score-input { width: 54px; height: 60px; background: #f8fafc; border: 2px solid var(--border-light); border-radius: 12px; text-align: center; font-size: 1.6rem; font-weight: 800; color: var(--text-dark); transition: all 0.2s ease-out; outline: none; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
+        .score-input { width: 54px; height: 60px; background: #f1f5f9; border: 2px solid transparent; border-radius: 12px; text-align: center; font-size: 1.6rem; font-weight: 800; color: var(--text-dark); transition: all 0.2s ease-out; outline: none; }
         .score-input:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 0 4px rgba(227, 27, 35, 0.1); transform: translateY(-2px); }
         .score-input.saved-guess { background: var(--success-bg); border-color: #6ee7b7; color: var(--success); }
         .score-separator { font-weight: 800; font-size: 1.2rem; color: var(--text-muted); opacity: 0.5; }
 
-        /* BOTÕES DE AÇÃO */
-        .btn-action { width: 100%; padding: 14px; border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.2s ease; border: none; display: flex; justify-content: center; align-items: center; gap: 8px; }
-        .btn-save { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(227, 27, 35, 0.2); }
-        .btn-save:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 6px 15px rgba(227, 27, 35, 0.3); }
+        /* BOTÕES DE AÇÃO (ESTILO LOGIN) */
+        .btn-action { width: 100%; padding: 14px; border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.3s ease; border: none; display: flex; justify-content: center; align-items: center; gap: 8px; }
+        .btn-save { background: linear-gradient(135deg, var(--primary) 0%, #b8141b 100%); color: white; box-shadow: 0 6px 15px rgba(227, 27, 35, 0.25); }
+        .btn-save:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(227, 27, 35, 0.35); }
         .btn-edit { background: transparent; color: var(--text-muted); border: 2px solid var(--border-light); }
         .btn-edit:hover { border-color: var(--primary); color: var(--primary); background: #fffafb; transform: translateY(-2px); }
         .btn-disabled { background: var(--border-light); color: #94a3b8; cursor: not-allowed; }
@@ -132,20 +136,47 @@
         .rank-me { border: 2px solid var(--primary); background: #fffafb; }
         .rank-me .rank-pts-val { color: var(--primary); }
 
+        /* NOTIFICAÇÕES TOAST */
+        #toast-container { position: fixed; bottom: 30px; right: 30px; display: flex; flex-direction: column; gap: 15px; z-index: 9999; pointer-events: none; }
+        .toast { background: white; color: var(--text-dark); padding: 16px 24px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 12px; font-weight: 600; font-size: 0.95rem; transform: translateX(150%); opacity: 0; transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); pointer-events: auto; }
+        .toast.show { transform: translateX(0); opacity: 1; }
+        .toast.success { border-left: 6px solid var(--success); }
+        .toast.success i { color: var(--success); font-size: 1.5rem; }
+        .toast.error { border-left: 6px solid var(--danger); }
+        .toast.error i { color: var(--danger); font-size: 1.5rem; }
+
         /* Remove setinhas dos inputs number */
         input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; appearance: none; margin: 0; }
         input[type="number"] { -moz-appearance: textfield; appearance: textfield; text-align: center; padding: 0; }
 
         /* MEDIA QUERIES MOBILE */
         @media (max-width: 600px) {
-            .container { padding: 0 10px; }
+            .navbar { padding: 1rem; justify-content: center; flex-direction: column; gap: 15px;}
+            
+            /* Ajuste Premium para as Abas no Mobile */
+            .tabs-container { top: 125px; padding: 10px 5px; }
+            .tabs { gap: 5px; justify-content: space-between; width: 100%; }
+            .tab-btn { 
+                flex: 1; /* Obriga os 3 botões a dividirem o espaço 33% para cada */
+                flex-direction: column; /* Ícone em cima, texto em baixo */
+                padding: 8px 4px; 
+                font-size: 0.75rem; /* Letra ligeiramente menor para caber */
+                border-radius: 10px;
+                text-align: center;
+                white-space: normal; /* Permite que o texto quebre a linha se o ecrã for muito pequeno */
+                line-height: 1.2;
+            }
+            .tab-btn i { font-size: 1.4rem; margin-bottom: 2px; }
+            
+            .container { padding: 0 10px; margin-top: 1.5rem; }
             .grid-cards { grid-template-columns: 1fr; }
-            .navbar { justify-content: center; }
             .rank-item { padding: 12px 15px; }
             .rank-badge { width: 36px; height: 36px; font-size: 1rem; }
             .rank-name { font-size: 0.95rem; }
             .rank-pts-val { font-size: 1.2rem; }
             .score-input { width: 45px; height: 45px; font-size: 1.2rem; }
+            #toast-container { bottom: 20px; right: 20px; left: 20px; }
+            .toast { width: 100%; padding: 14px 20px; font-size: 0.85rem;}
         }
     </style>
 </head>
@@ -154,17 +185,19 @@
     <nav class="navbar">
         <div class="brand"><i class="ph-fill ph-trophy"></i> Bolão Ademicon</div>
         <div class="user-panel">
-            <a href="/admin-panel" id="btn-admin-panel" style="display: none; background: white; color: var(--primary); padding: 6px 14px; border-radius: 8px; font-weight: 800; text-decoration: none; align-items: center; gap: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);"><i class="ph-bold ph-gear"></i> Admin</a>
-            <span class="user-name-wrapper"><i class="ph-fill ph-user-circle"></i> <span id="header-nome">...</span></span>
+            <a href="/admin-panel" id="btn-admin-panel" style="display: none; background: white; color: var(--primary); padding: 8px 16px; border-radius: 8px; font-weight: 800; text-decoration: none; align-items: center; gap: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);"><i class="ph-bold ph-gear"></i> Admin</a>
+            <span class="user-name-wrapper" style="display: flex; align-items: center; gap: 6px;"><i class="ph-fill ph-user-circle" style="font-size: 1.3rem;"></i> <span id="header-nome">...</span></span>
             <span class="pts-badge"><i class="ph-fill ph-star"></i> <span id="header-pontos">0 pts</span></span>
-            <button class="btn-logout" onclick="fazerLogout()"><i class="ph-bold ph-sign-out"></i> Sair</button>
+            <button class="btn-logout" onclick="fazerLogout()"><i class="ph-bold ph-sign-out"></i></button>
         </div>
     </nav>
 
-    <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('jogos')"><i class="ph-bold ph-soccer-ball"></i> Jogos da Rodada</button>
-        <button class="tab-btn" onclick="switchTab('historico')"><i class="ph-bold ph-chart-line-up"></i> Meus Resultados</button>
-        <button class="tab-btn" onclick="switchTab('ranking')"><i class="ph-bold ph-medal"></i> Ranking Geral</button>
+    <div class="tabs-container">
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('jogos')"><i class="ph-bold ph-soccer-ball"></i> Jogos da Rodada</button>
+            <button class="tab-btn" onclick="switchTab('historico')"><i class="ph-bold ph-chart-line-up"></i> Meus Resultados</button>
+            <button class="tab-btn" onclick="switchTab('ranking')"><i class="ph-bold ph-medal"></i> Ranking Geral</button>
+        </div>
     </div>
 
     <div class="container">
@@ -178,6 +211,8 @@
             <div id="lista-ranking"></div>
         </div>
     </div>
+
+    <div id="toast-container"></div>
 
     <script>
         const flags = {
@@ -210,6 +245,21 @@
             return `${dia}/${mes} às ${horas}:${minutos}`;
         }
 
+        // --- SISTEMA DE TOASTS ---
+        function showToast(mensagem, tipo = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${tipo}`;
+            const icone = tipo === 'success' ? 'ph-check-circle' : 'ph-warning-circle';
+            toast.innerHTML = `<i class="ph-fill ${icone}"></i> <span>${mensagem}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 400); 
+            }, 3500);
+        }
+
         let usuarioLogado = null;
         let partidasGlobais = [];
         let meusPalpitesGlobais = [];
@@ -224,7 +274,7 @@
                 const res = await fetch('/api/auth/me');
                 if (!res.ok) throw new Error();
                 usuarioLogado = await res.json();
-                document.getElementById('header-nome').innerText = usuarioLogado.nome;
+                document.getElementById('header-nome').innerText = usuarioLogado.nome.split(' ')[0]; // Mostra só o primeiro nome
                 document.getElementById('header-pontos').innerText = `${usuarioLogado.pontos} pts`;
 
                 if (usuarioLogado.admin) {
@@ -260,7 +310,7 @@
                 .sort((a, b) => new Date(a.dataHoraDoJogo) - new Date(b.dataHoraDoJogo));
 
             if (jogosAbertos.length === 0) {
-                container.innerHTML = '<div style="text-align:center; grid-column: 1 / -1; padding: 3rem; background: var(--card-bg); border-radius: 20px; box-shadow: 0 4px 20px -2px rgba(0,0,0,0.05);"><i class="ph-bold ph-calendar-x" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem;"></i><h3 style="color: var(--text-dark);">Nenhum jogo pendente</h3><p style="color: var(--text-muted);">Todos os jogos da rodada foram encerrados ou finalizados.</p></div>';
+                container.innerHTML = '<div style="text-align:center; grid-column: 1 / -1; padding: 4rem; background: var(--card-bg); border-radius: 20px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); border: 1px solid rgba(226, 232, 240, 0.8);"><i class="ph-bold ph-calendar-check" style="font-size: 3.5rem; color: var(--text-muted); margin-bottom: 1rem; opacity: 0.5;"></i><h3 style="color: var(--text-dark); font-size: 1.3rem;">Tudo limpo por aqui!</h3><p style="color: var(--text-muted); margin-top: 5px;">Não há mais jogos pendentes para esta rodada.</p></div>';
                 return;
             }
 
@@ -333,7 +383,7 @@
             const jogosFechados = partidasGlobais.filter(p => p.finalizada).sort((a, b) => new Date(b.dataHoraDoJogo) - new Date(a.dataHoraDoJogo));
 
             if (jogosFechados.length === 0) {
-                 container.innerHTML = '<div style="text-align:center; grid-column: 1 / -1; padding: 3rem; background: var(--card-bg); border-radius: 20px; box-shadow: 0 4px 20px -2px rgba(0,0,0,0.05);"><i class="ph-bold ph-clock-counter-clockwise" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem;"></i><h3 style="color: var(--text-dark);">Sem histórico</h3><p style="color: var(--text-muted);">Ainda não tens resultados de jogos finalizados.</p></div>';
+                 container.innerHTML = '<div style="text-align:center; grid-column: 1 / -1; padding: 4rem; background: var(--card-bg); border-radius: 20px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); border: 1px solid rgba(226, 232, 240, 0.8);"><i class="ph-bold ph-clock-counter-clockwise" style="font-size: 3.5rem; color: var(--text-muted); margin-bottom: 1rem; opacity: 0.5;"></i><h3 style="color: var(--text-dark); font-size: 1.3rem;">Sem histórico</h3><p style="color: var(--text-muted); margin-top: 5px;">Ainda não tens resultados de jogos finalizados.</p></div>';
                  return;
             }
 
@@ -342,7 +392,7 @@
                 if (!meuPalpite) return; 
 
                 const acertouAlgo = meuPalpite.pontosGanhos > 0;
-                const bgBadge = acertouAlgo ? 'background: var(--success-bg); color: var(--success);' : 'background: var(--danger-bg); color: var(--danger);';
+                const bgBadge = acertouAlgo ? 'background: var(--success-bg); color: var(--success); border: 1px solid #a7f3d0;' : 'background: var(--danger-bg); color: var(--danger); border: 1px solid #fecaca;';
                 const txtBadge = acertouAlgo ? `+${meuPalpite.pontosGanhos} pts` : '0 pts';
                 const iconBadge = acertouAlgo ? 'ph-trend-up' : 'ph-trend-down';
 
@@ -350,22 +400,23 @@
                 div.className = 'match-card';
                 div.style.animationDelay = `${index * 0.05}s`;
 
+                // --- FIX ARQUITETURAL: Removido flex inútil e adicionado white-space nowrap ---
                 div.innerHTML = `
                     <div class="card-header">
                         <div class="match-info-group">
                             <span class="fase-badge">${partida.fase}</span>
                             <span class="date-badge"><i class="ph-bold ph-flag-checkered"></i> Resultado Final</span>
                         </div>
-                        <span class="status-badge" style="${bgBadge}; font-size: 0.9rem;"><i class="ph-bold ${iconBadge}"></i> ${txtBadge}</span>
+                        <span class="status-badge" style="${bgBadge}; font-size: 0.9rem; font-weight: 800; box-shadow: 0 2px 4px rgba(0,0,0,0.02);"><i class="ph-bold ${iconBadge}"></i> ${txtBadge}</span>
                     </div>
                     <div class="teams-container" style="margin-bottom: 0;">
                         <div class="team">
                             <img src="${getFlagUrl(partida.equipaA)}" alt="${partida.equipaA}" loading="lazy">
                             <span class="team-name">${partida.equipaA}</span>
                         </div>
-                        <div class="team" style="flex: 2; gap: 4px;">
-                            <div style="font-size: 2.2rem; font-weight: 800; color: var(--text-dark); letter-spacing: 2px;">${partida.golosEquipaA} - ${partida.golosEquipaB}</div>
-                            <div style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600; background: #f1f5f9; padding: 4px 12px; border-radius: 12px;">Teu palpite: ${meuPalpite.golosEquipaA} x ${meuPalpite.golosEquipaB}</div>
+                        <div class="team" style="gap: 4px;">
+                            <div style="font-size: 2.2rem; font-weight: 800; color: var(--text-dark); letter-spacing: 2px; text-shadow: 0 2px 4px rgba(0,0,0,0.05); line-height: 1;">${partida.golosEquipaA} - ${partida.golosEquipaB}</div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; background: #f1f5f9; padding: 4px 10px; border-radius: 12px; border: 1px solid var(--border-light); white-space: nowrap; margin-top: 4px;">Teu palpite: <strong style="color: var(--text-dark);">${meuPalpite.golosEquipaA} x ${meuPalpite.golosEquipaB}</strong></div>
                         </div>
                         <div class="team">
                             <img src="${getFlagUrl(partida.equipaB)}" alt="${partida.equipaB}" loading="lazy">
@@ -389,7 +440,7 @@
             const goloB = document.getElementById(`goloB_${idPartida}`).value;
 
             if (goloA === '' || goloB === '') {
-                alert("Preencha o placar completo!");
+                showToast("Preencha o placar completo!", "error");
                 btn.innerHTML = textoOriginal;
                 btn.disabled = false;
                 btn.style.opacity = '1';
@@ -403,16 +454,17 @@
             try {
                 const resposta = await fetch('/palpites', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                 if (resposta.ok) {
+                    showToast("Palpite salvo com sucesso!", "success");
                     await carregarDadosDoPainel(); 
                 } else {
                     const err = await resposta.json();
-                    alert("Erro: " + (err.erro || "Falha ao salvar"));
+                    showToast(err.erro || "Falha ao salvar", "error");
                     btn.innerHTML = textoOriginal;
                     btn.disabled = false;
                     btn.style.opacity = '1';
                 }
             } catch (erro) {
-                alert("Erro de conexão com o servidor.");
+                showToast("Erro de conexão com o servidor.", "error");
                 btn.innerHTML = textoOriginal;
                 btn.disabled = false;
                 btn.style.opacity = '1';
@@ -429,7 +481,7 @@
                 container.innerHTML = `
                     <div class="ranking-wrapper">
                         <div class="ranking-header">
-                            <h2><i class="ph-fill ph-trophy" style="color: #F59E0B;"></i> Ranking Geral</h2>
+                            <h2><i class="ph-fill ph-trophy" style="color: #F59E0B; filter: drop-shadow(0 2px 4px rgba(245, 158, 11, 0.3));"></i> Ranking Geral</h2>
                             <p>Os maiores estrategistas do Bolão Ademicon</p>
                         </div>
                         <div id="ranking-rows-container"></div>
@@ -444,14 +496,14 @@
                     const destaqueClass = user.id === usuarioLogado.id ? 'rank-me' : '';
                     
                     let medalIcon = '';
-                    if (pos === 1) medalIcon = '<i class="ph-fill ph-medal" style="color: #F59E0B; font-size: 1.3rem;"></i>';
-                    else if (pos === 2) medalIcon = '<i class="ph-fill ph-medal" style="color: #94A3B8; font-size: 1.3rem;"></i>';
-                    else if (pos === 3) medalIcon = '<i class="ph-fill ph-medal" style="color: #B45309; font-size: 1.3rem;"></i>';
+                    if (pos === 1) medalIcon = '<i class="ph-fill ph-medal" style="color: #F59E0B; font-size: 1.4rem;"></i>';
+                    else if (pos === 2) medalIcon = '<i class="ph-fill ph-medal" style="color: #94A3B8; font-size: 1.4rem;"></i>';
+                    else if (pos === 3) medalIcon = '<i class="ph-fill ph-medal" style="color: #B45309; font-size: 1.4rem;"></i>';
 
                     const euTag = user.id === usuarioLogado.id ? '<span class="rank-tag">Você</span>' : '';
 
                     rowsContainer.innerHTML += `
-                        <div class="rank-item ${cssPos} ${destaqueClass}" style="animation-delay: ${index * 0.1}s">
+                        <div class="rank-item ${cssPos} ${destaqueClass}" style="animation-delay: ${index * 0.08}s">
                             <div class="rank-left">
                                 <div class="rank-badge">${pos}º</div>
                                 <div class="rank-user-info">

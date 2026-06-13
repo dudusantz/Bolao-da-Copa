@@ -7,12 +7,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
-        :root { --primary: #E31B23; --bg-color: #f1f5f9; --card-bg: #ffffff; --text-dark: #0f172a; --text-muted: #64748b; --border: #e2e8f0; --success: #059669; --danger: #dc2626; }
+        :root { --primary: #E31B23; --bg-color: #f1f5f9; --card-bg: #ffffff; --text-dark: #0f172a; --text-muted: #64748b; --border: #e2e8f0; --border-focus: #cbd5e1; --success: #059669; --danger: #dc2626; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         body { background-color: var(--bg-color); color: var(--text-dark); display: flex; min-height: 100vh; flex-direction: row; overflow-x: hidden; }
 
-        /* SIDEBAR ADMIN */
-        .sidebar { width: 280px; background: #0f172a; color: white; padding: 2rem 1.5rem; display: flex; flex-direction: column; gap: 2rem; box-shadow: 4px 0 15px rgba(0,0,0,0.1); z-index: 10; }
+        /* SIDEBAR ADMIN ESTÁTICA */
+        .sidebar { width: 280px; background: #0f172a; color: white; padding: 2rem 1.5rem; display: flex; flex-direction: column; gap: 2rem; box-shadow: 4px 0 15px rgba(0,0,0,0.1); z-index: 10; height: 100vh; position: sticky; top: 0; }
         .brand { font-size: 1.4rem; font-weight: 800; display: flex; align-items: center; gap: 10px; color: #f8fafc; }
         .nav-links { display: flex; flex-direction: column; gap: 8px; }
         .nav-btn { background: transparent; color: #94a3b8; border: none; padding: 12px 16px; border-radius: 10px; text-align: left; font-size: 1.05rem; font-weight: 600; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 10px; }
@@ -31,97 +31,74 @@
         .tab-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* CARDS & INPUTS */
-        .admin-card { background: var(--card-bg); border-radius: 16px; padding: 25px; box-shadow: 0 4px 15px -3px rgba(0,0,0,0.05); border: 1px solid var(--border); margin-bottom: 20px; }
+        /* GRID DE CARDS PREMIUM */
+        .grid-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.8rem; }
         
-        .fase-selector { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
-        .fase-selector select { padding: 12px 20px; font-size: 1.1rem; font-weight: 700; border-radius: 10px; border: 2px solid var(--border); background: #f8fafc; color: var(--text-dark); cursor: pointer; outline: none; width: 100%; max-width: 300px; }
-        .fase-selector select:focus { border-color: var(--primary); }
-
-        .config-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 20px; }
-        .input-group label { display: block; font-size: 0.9rem; font-weight: 700; color: var(--text-muted); margin-bottom: 8px; }
-        .input-group input { width: 100%; padding: 14px; font-size: 1.3rem; font-weight: 800; border-radius: 10px; border: 2px solid var(--border); background: #f8fafc; text-align: center; outline: none; transition: 0.2s; }
-        .input-group input:focus { border-color: var(--primary); background: white; }
+        .match-card { background: var(--card-bg); border-radius: 20px; padding: 1.5rem; box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05); border: 1px solid rgba(226, 232, 240, 0.6); display: flex; flex-direction: column; justify-content: space-between; transition: 0.2s;}
+        .match-card:hover { transform: translateY(-3px); box-shadow: 0 10px 25px -5px rgba(0,0,0,0.08); border-color: var(--border-focus);}
         
-        .btn-action { background: var(--primary); color: white; border: none; padding: 14px 24px; border-radius: 10px; font-size: 1rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s; box-shadow: 0 4px 12px rgba(227, 27, 35, 0.2); width: 100%; justify-content: center; }
-        .btn-action:hover { background: #b8141b; transform: translateY(-2px); }
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
+        .fase-badge { font-size: 0.75rem; font-weight: 800; color: var(--primary); background: #fee2e2; padding: 4px 10px; border-radius: 8px; display: inline-block; margin-bottom: 4px;}
+        .date-badge { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); display: flex; align-items: center; gap: 4px; }
 
-        /* LISTA DE JOGOS */
-        .match-row { display: flex; justify-content: space-between; align-items: center; padding: 20px; border: 1px solid var(--border); border-radius: 12px; margin-bottom: 15px; background: white; flex-wrap: wrap; gap: 15px; }
-        .match-info { flex: 1; min-width: 200px; }
-        .match-info h4 { font-size: 1.2rem; margin-bottom: 8px; }
-        .match-info span { font-size: 0.85rem; font-weight: 600; color: var(--primary); background: #fee2e2; padding: 4px 10px; border-radius: 8px; display: inline-flex; align-items: center; gap: 6px;}
-        .score-inputs { display: flex; align-items: center; gap: 10px; width: 100%; justify-content: flex-start; flex-wrap: wrap;}
-        .score-inputs input { width: 60px; height: 50px; text-align: center; font-size: 1.5rem; font-weight: 800; border: 2px solid var(--border); border-radius: 8px; outline: none; }
-        .score-inputs input:focus { border-color: var(--primary); }
+        .teams-container { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px; margin-bottom: 1.5rem; }
+        .team { display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center;}
+        .team img { width: 48px; height: 34px; object-fit: cover; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .team-name { font-weight: 700; font-size: 0.95rem; color: var(--text-dark); line-height: 1.2; }
+        
+        .score-board { display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .score-input { width: 50px; height: 55px; background: #f8fafc; border: 2px solid var(--border); border-radius: 10px; text-align: center; font-size: 1.5rem; font-weight: 800; color: var(--text-dark); outline: none; transition: 0.2s;}
+        .score-input:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 0 3px rgba(227, 27, 35, 0.1); }
+        .score-separator { font-weight: 800; font-size: 1.2rem; color: var(--text-muted); opacity: 0.5; }
+
+        .btn-encerrar { background: var(--success); color: white; border: none; padding: 12px; border-radius: 10px; font-size: 0.95rem; font-weight: 700; cursor: pointer; width: 100%; display: flex; justify-content: center; align-items: center; gap: 6px; transition: 0.2s;}
+        .btn-encerrar:hover { background: #047857; transform: translateY(-1px); }
+        
+        .btn-estorno { background: white; color: var(--danger); border: 2px solid var(--danger); padding: 12px; border-radius: 10px; font-size: 0.95rem; font-weight: 700; cursor: pointer; width: 100%; display: flex; justify-content: center; align-items: center; gap: 6px; transition: 0.2s;}
+        .btn-estorno:hover { background: var(--danger-bg); transform: translateY(-1px); }
 
         input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; appearance: none; margin: 0; }
         input[type="number"] { -moz-appearance: textfield; appearance: textfield; text-align: center; padding: 0; }
 
-        /* =========================================
-           SISTEMA DE TOASTS (NOTIFICAÇÕES FLUTUANTES)
-           ========================================= */
-        #toast-container {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            z-index: 9999;
-            pointer-events: none;
-        }
+        /* CARD DE REGRAS */
+        .admin-card-rules { background: var(--card-bg); border-radius: 16px; padding: 25px; box-shadow: 0 4px 15px -3px rgba(0,0,0,0.05); border: 1px solid var(--border); margin-bottom: 20px; max-width: 800px;}
+        .fase-selector { margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+        .fase-selector select { width: 100%; padding: 12px 20px; font-size: 1.1rem; font-weight: 700; border-radius: 10px; border: 2px solid var(--border); background: #f8fafc; color: var(--text-dark); cursor: pointer; outline: none; margin-top: 10px;}
+        .fase-selector select:focus { border-color: var(--primary); }
+        .config-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 20px; }
+        .input-group label { display: block; font-size: 0.85rem; font-weight: 700; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase;}
+        .input-group input { width: 100%; padding: 14px; font-size: 1.3rem; font-weight: 800; border-radius: 10px; border: 2px solid var(--border); background: #f8fafc; text-align: center; outline: none; }
+        .input-group input:focus { border-color: var(--primary); background: white; }
+        .btn-action { background: var(--primary); color: white; border: none; padding: 14px 24px; border-radius: 10px; font-size: 1rem; font-weight: 700; cursor: pointer; width: 100%; display: flex; justify-content: center; align-items: center; gap: 8px; transition: 0.2s;}
+        .btn-action:hover { background: #b8141b; }
 
-        .toast {
-            background: white;
-            color: var(--text-dark);
-            padding: 16px 24px;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-weight: 600;
-            font-size: 0.95rem;
-            transform: translateX(150%);
-            opacity: 0;
-            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            pointer-events: auto;
-        }
-
-        .toast.show {
-            transform: translateX(0);
-            opacity: 1;
-        }
-
+        #toast-container { position: fixed; bottom: 30px; right: 30px; display: flex; flex-direction: column; gap: 15px; z-index: 9999; pointer-events: none; }
+        .toast { background: white; color: var(--text-dark); padding: 16px 24px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 12px; font-weight: 600; font-size: 0.95rem; transform: translateX(150%); opacity: 0; transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); pointer-events: auto; }
+        .toast.show { transform: translateX(0); opacity: 1; }
         .toast.success { border-left: 6px solid var(--success); }
         .toast.success i { color: var(--success); font-size: 1.5rem; }
-        
         .toast.error { border-left: 6px solid var(--danger); }
         .toast.error i { color: var(--danger); font-size: 1.5rem; }
 
-        /* MEDIA QUERIES MOBILE */
         @media (max-width: 768px) {
             body { flex-direction: column; }
-            .sidebar { width: 100%; height: auto; padding: 1rem; flex-direction: row; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;}
+            .sidebar { width: 100%; height: auto; padding: 1rem; flex-direction: row; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; position: relative;}
             .brand { width: 100%; justify-content: center; margin-bottom: 10px;}
             .nav-links { flex-direction: row; gap: 10px; width: 100%; justify-content: center;}
             .nav-btn { font-size: 0.9rem; padding: 8px 12px; }
             .back-btn { margin-top: 10px; width: 100%; }
             .main-content { padding: 1.5rem 1rem; }
-            .page-title { font-size: 1.5rem; }
-            .score-inputs button { width: 100%; margin-top: 10px;}
-            #toast-container { bottom: 20px; right: 20px; left: 20px; }
-            .toast { width: 100%; padding: 14px 20px; font-size: 0.85rem;}
+            .grid-cards { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
     <aside class="sidebar">
-        <div class="brand"><i class="ph-fill ph-shield-check"></i> Centro de Comando</div>
+        <div class="brand"><i class="ph-fill ph-shield-check"></i> Admin</div>
         <div class="nav-links">
-            <button class="nav-btn active" onclick="switchAdminTab('jogos')"><i class="ph-bold ph-soccer-ball"></i> Encerrar Partidas</button>
+            <button class="nav-btn active" onclick="switchAdminTab('jogos')"><i class="ph-bold ph-soccer-ball"></i> Partidas Pendentes</button>
+            <button class="nav-btn" onclick="switchAdminTab('encerrados')"><i class="ph-bold ph-archive"></i> Jogos Encerrados</button>
             <button class="nav-btn" onclick="switchAdminTab('regras')"><i class="ph-bold ph-sliders"></i> Regras de Pontos</button>
         </div>
         <a href="/dashboard" class="back-btn"><i class="ph-bold ph-arrow-left"></i> Voltar ao Sistema</a>
@@ -132,10 +109,20 @@
         <div id="tab-jogos" class="tab-content active">
             <div class="page-header">
                 <h1 class="page-title">Partidas Pendentes</h1>
-                <p class="page-desc">Lance o placar oficial para distribuir os pontos da rodada.</p>
+                <p class="page-desc">Insira o placar oficial para distribuir os pontos da rodada.</p>
             </div>
-            <div id="lista-admin">
+            <div class="grid-cards" id="lista-admin">
                 <p>A carregar jogos...</p>
+            </div>
+        </div>
+
+        <div id="tab-encerrados" class="tab-content">
+            <div class="page-header">
+                <h1 class="page-title">Jogos Encerrados</h1>
+                <p class="page-desc">Histórico de partidas finalizadas. Estorne para corrigir resultados.</p>
+            </div>
+            <div class="grid-cards" id="lista-encerrados">
+                <p>A carregar histórico...</p>
             </div>
         </div>
 
@@ -145,9 +132,9 @@
                 <p class="page-desc">Configure os pesos dos acertos de acordo com a fase do torneio.</p>
             </div>
             
-            <div class="admin-card">
+            <div class="admin-card-rules">
                 <div class="fase-selector">
-                    <label style="font-weight: 700; color: var(--text-dark); width: 100%;">Selecione a Fase:</label>
+                    <label style="font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Selecione a Fase</label>
                     <select id="select-fase" onchange="carregarConfiguracao(this.value)">
                         <option value="Fase de Grupos">Fase de Grupos</option>
                         <option value="16 Avos de Final">16 Avos de Final</option>
@@ -160,20 +147,20 @@
 
                 <div class="config-grid">
                     <div class="input-group">
-                        <label>Placar Exato (Cheio)</label>
+                        <label>Placar Exato</label>
                         <input type="number" id="cfg_exato" placeholder="Ex: 25">
                     </div>
                     <div class="input-group">
-                        <label>Acertou Vencedor/Empate</label>
+                        <label>Vencedor/Empate</label>
                         <input type="number" id="cfg_vencedor" placeholder="Ex: 10">
                     </div>
                     <div class="input-group">
-                        <label>Acertou Gols 1 Equipa</label>
+                        <label>Gols 1 Equipa</label>
                         <input type="number" id="cfg_golo" placeholder="Ex: 5">
                     </div>
                 </div>
                 <button class="btn-action" onclick="salvarConfiguracao()">
-                    <i class="ph-bold ph-floppy-disk"></i> Salvar Regras desta Fase
+                    <i class="ph-bold ph-floppy-disk"></i> Salvar Regras
                 </button>
             </div>
         </div>
@@ -183,6 +170,26 @@
     <div id="toast-container"></div>
 
     <script>
+        const flags = {
+            'México': 'mx', 'África do Sul': 'za', 'Coreia do Sul': 'kr', 'República Tcheca': 'cz',
+            'Canadá': 'ca', 'Bósnia e Herzegovina': 'ba', 'Catar': 'qa', 'Suíça': 'ch',
+            'Brasil': 'br', 'Marrocos': 'ma', 'Haiti': 'ht', 'Escócia': 'gb-sct',
+            'EUA': 'us', 'Paraguai': 'py', 'Austrália': 'au', 'Turquia': 'tr',
+            'Alemanha': 'de', 'Curaçao': 'cw', 'Costa do Marfim': 'ci', 'Equador': 'ec',
+            'Holanda': 'nl', 'Japão': 'jp', 'Suécia': 'se', 'Tunísia': 'tn',
+            'Bélgica': 'be', 'Egito': 'eg', 'Irã': 'ir', 'Nova Zelândia': 'nz',
+            'Espanha': 'es', 'Cabo Verde': 'cv', 'Arábia Saudita': 'sa', 'Uruguai': 'uy',
+            'França': 'fr', 'Senegal': 'sn', 'Iraque': 'iq', 'Noruega': 'no',
+            'Argentina': 'ar', 'Argélia': 'dz', 'Áustria': 'at', 'Jordânia': 'jo',
+            'Portugal': 'pt', 'Congo DR': 'cd', 'Uzbequistão': 'uz', 'Colômbia': 'co',
+            'Inglaterra': 'gb-eng', 'Croácia': 'hr', 'Gana': 'gh', 'Panamá': 'pa'
+        };
+
+        function getFlagUrl(teamName) {
+            const code = flags[teamName] || 'un';
+            return `https://flagcdn.com/w80/${code}.png`;
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             carregarJogosParaAdmin();
             carregarConfiguracao(document.getElementById('select-fase').value);
@@ -209,7 +216,6 @@
             document.getElementById(`tab-${tabName}`).classList.add('active');
         }
 
-        // Função para formatar a data visualmente
         function formatarDataHora(dataString) {
             if (!dataString) return 'Data não definida';
             const data = new Date(dataString);
@@ -243,6 +249,7 @@
             
             try {
                 const btn = event.currentTarget;
+                const textoOrig = btn.innerHTML;
                 btn.innerHTML = '<i class="ph-bold ph-spinner ph-spin"></i> Salvando...';
                 
                 const res = await fetch('/admin/configuracao', {
@@ -253,16 +260,15 @@
                 
                 if (res.ok) {
                     setTimeout(() => {
-                        showToast(`Regras da [${faseAtual}] atualizadas com sucesso!`, 'success');
-                        btn.innerHTML = '<i class="ph-bold ph-floppy-disk"></i> Salvar Regras desta Fase';
+                        showToast(`Regras atualizadas!`, 'success');
+                        btn.innerHTML = textoOrig;
                     }, 500);
                 } else {
-                    showToast("Falha de permissão ao salvar.", 'error');
-                    btn.innerHTML = '<i class="ph-bold ph-floppy-disk"></i> Salvar Regras desta Fase';
+                    showToast("Falha ao salvar.", 'error');
+                    btn.innerHTML = textoOrig;
                 }
             } catch(e) { 
-                showToast("Erro de conexão com o servidor.", 'error');
-                btn.innerHTML = '<i class="ph-bold ph-floppy-disk"></i> Salvar Regras desta Fase';
+                showToast("Erro no servidor.", 'error');
             }
         }
 
@@ -271,69 +277,92 @@
                 const res = await fetch('/partidas');
                 const partidas = await res.json();
                 
-                const container = document.getElementById('lista-admin');
-                container.innerHTML = '';
+                const containerPendentes = document.getElementById('lista-admin');
+                const containerEncerrados = document.getElementById('lista-encerrados');
+                
+                containerPendentes.innerHTML = '';
+                containerEncerrados.innerHTML = '';
 
-                // Separação e ORDENAÇÃO POR DATA
-                // Jogos abertos: Ordena do mais antigo para o mais recente (os próximos a acontecer no topo)
                 const jogosAbertos = partidas
                     .filter(p => !p.finalizada)
                     .sort((a, b) => new Date(a.dataHoraDoJogo) - new Date(b.dataHoraDoJogo));
 
-                // Jogos fechados: Ordena do mais recente para o mais antigo (os últimos encerrados no topo)
                 const jogosFechados = partidas
                     .filter(p => p.finalizada)
                     .sort((a, b) => new Date(b.dataHoraDoJogo) - new Date(a.dataHoraDoJogo));
 
-                // --- BLOCO 1: JOGOS PENDENTES ---
-                container.innerHTML += `<h3 style="margin: 10px 0 15px 0; font-size: 1.1rem; color: var(--text-dark);">A Aguardar Placar:</h3>`;
-                
+                // --- INJEÇÃO DA ABA: JOGOS PENDENTES ---
                 if(jogosAbertos.length === 0) {
-                    container.innerHTML += '<div class="admin-card" style="text-align: center; color: #64748b;">Nenhuma partida pendente.</div>';
+                    containerPendentes.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #64748b; padding: 2rem;">Nenhuma partida pendente.</div>';
                 } else {
                     jogosAbertos.forEach(p => {
-                        container.innerHTML += `
-                            <div class="match-row" id="card_${p.id}">
-                                <div class="match-info">
-                                    <h4>${p.equipaA} vs ${p.equipaB}</h4>
-                                    <span>${p.fase}</span>
-                                    <span style="background: #f1f5f9; color: #64748b; margin-left: 8px;"><i class="ph-bold ph-calendar-blank"></i> ${formatarDataHora(p.dataHoraDoJogo)}</span>
+                        containerPendentes.innerHTML += `
+                            <div class="match-card" id="card_${p.id}">
+                                <div class="card-header">
+                                    <div>
+                                        <div class="fase-badge">${p.fase}</div>
+                                    </div>
+                                    <div class="date-badge"><i class="ph-bold ph-clock"></i> ${formatarDataHora(p.dataHoraDoJogo)}</div>
                                 </div>
-                                <div class="score-inputs">
-                                    <input type="number" id="realA_${p.id}" placeholder="0" min="0">
-                                    <span style="color: #94a3b8; font-weight: bold;">X</span>
-                                    <input type="number" id="realB_${p.id}" placeholder="0" min="0">
-                                    <button class="btn-action" style="padding: 12px 20px; font-size: 0.9rem;" onclick="encerrarJogo(event, ${p.id})">Encerrar</button>
+                                <div class="teams-container">
+                                    <div class="team">
+                                        <img src="${getFlagUrl(p.equipaA)}" alt="${p.equipaA}">
+                                        <span class="team-name">${p.equipaA}</span>
+                                    </div>
+                                    <div class="score-board">
+                                        <input type="number" id="realA_${p.id}" class="score-input" placeholder="0" min="0">
+                                        <span class="score-separator">X</span>
+                                        <input type="number" id="realB_${p.id}" class="score-input" placeholder="0" min="0">
+                                    </div>
+                                    <div class="team">
+                                        <img src="${getFlagUrl(p.equipaB)}" alt="${p.equipaB}">
+                                        <span class="team-name">${p.equipaB}</span>
+                                    </div>
                                 </div>
+                                <button class="btn-encerrar" onclick="encerrarJogo(event, ${p.id})">
+                                    <i class="ph-bold ph-check-circle"></i> Confirmar Placar
+                                </button>
                             </div>
                         `;
                     });
                 }
 
-                // --- BLOCO 2: JOGOS ENCERRADOS (Válvula de Segurança) ---
-                if(jogosFechados.length > 0) {
-                    container.innerHTML += `<h3 style="margin: 30px 0 15px 0; font-size: 1.1rem; color: var(--text-dark); border-top: 1px solid var(--border); padding-top: 20px;">Jogos Encerrados (Modo Correção):</h3>`;
-                    
+                // --- INJEÇÃO DA ABA: JOGOS ENCERRADOS ---
+                if(jogosFechados.length === 0) {
+                    containerEncerrados.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #64748b; padding: 2rem;">Nenhum jogo no histórico.</div>';
+                } else {
                     jogosFechados.forEach(p => {
-                        container.innerHTML += `
-                            <div class="match-row" style="background: #f8fafc; border-color: #e2e8f0;">
-                                <div class="match-info" style="opacity: 0.8;">
-                                    <h4>${p.equipaA} <span style="color: var(--primary); font-weight: 900;">${p.golosEquipaA} x ${p.golosEquipaB}</span> ${p.equipaB}</h4>
-                                    <span style="background: #e2e8f0; color: #475569;">${p.fase}</span>
-                                    <span style="background: #e2e8f0; color: #475569; margin-left: 8px;"><i class="ph-bold ph-calendar-blank"></i> ${formatarDataHora(p.dataHoraDoJogo)}</span>
+                        containerEncerrados.innerHTML += `
+                            <div class="match-card" style="border-color: #e2e8f0; background: #f8fafc;">
+                                <div class="card-header" style="opacity: 0.8;">
+                                    <div><div class="fase-badge" style="background: #e2e8f0; color: var(--text-muted);">${p.fase}</div></div>
+                                    <div class="date-badge"><i class="ph-bold ph-archive"></i> Encerrado</div>
                                 </div>
-                                <div class="score-inputs" style="justify-content: flex-end;">
-                                    <button class="btn-action" style="background: white; color: var(--danger); border: 2px solid var(--danger); padding: 10px 15px; font-size: 0.9rem; width: auto;" onclick="estornarJogo(event, ${p.id})">
-                                        <i class="ph-bold ph-arrow-u-up-left"></i> Reabrir e Estornar Pontos
-                                    </button>
+                                <div class="teams-container" style="opacity: 0.9;">
+                                    <div class="team">
+                                        <img src="${getFlagUrl(p.equipaA)}" alt="${p.equipaA}">
+                                        <span class="team-name">${p.equipaA}</span>
+                                    </div>
+                                    <div class="score-board">
+                                        <span style="font-size: 2rem; font-weight: 800; color: var(--text-dark);">${p.golosEquipaA}</span>
+                                        <span class="score-separator">-</span>
+                                        <span style="font-size: 2rem; font-weight: 800; color: var(--text-dark);">${p.golosEquipaB}</span>
+                                    </div>
+                                    <div class="team">
+                                        <img src="${getFlagUrl(p.equipaB)}" alt="${p.equipaB}">
+                                        <span class="team-name">${p.equipaB}</span>
+                                    </div>
                                 </div>
+                                <button class="btn-estorno" onclick="estornarJogo(event, ${p.id})">
+                                    <i class="ph-bold ph-arrow-u-up-left"></i> Estornar Pontos
+                                </button>
                             </div>
                         `;
                     });
                 }
 
             } catch (e) {
-                showToast("Erro ao carregar jogos ou acesso negado.", 'error');
+                showToast("Erro ao carregar jogos.", 'error');
             }
         }
 
@@ -343,46 +372,37 @@
             const goloB = document.getElementById(`realB_${idPartida}`).value;
 
             if (goloA === '' || goloB === '') {
-                showToast("Preencha o placar oficial completo!", 'error');
+                showToast("Preencha o placar!", 'error');
                 return;
             }
 
-            if(confirm("ATENÇÃO: Encerrar a partida acionará o cálculo de pontos de todos os usuários baseado nas regras desta fase. Confirma?")) {
-                btn.innerHTML = '<i class="ph-bold ph-spinner ph-spin"></i>';
-                btn.disabled = true;
+            btn.innerHTML = '<i class="ph-bold ph-spinner ph-spin"></i> Processando...';
+            btn.disabled = true;
 
-                try {
-                    const resposta = await fetch(`/admin/partidas/${idPartida}/encerrar`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ golosEquipaA: parseInt(goloA), golosEquipaB: parseInt(goloB) })
-                    });
+            try {
+                const resposta = await fetch(`/admin/partidas/${idPartida}/encerrar`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ golosEquipaA: parseInt(goloA), golosEquipaB: parseInt(goloB) })
+                });
 
-                    if (resposta.ok) {
-                        showToast("Partida encerrada e pontos distribuídos!", 'success');
-                        carregarJogosParaAdmin(); // Recarrega as listas e aplica a ordenação automaticamente
-                    } else {
-                        const err = await resposta.json();
-                        showToast("Erro: " + err.erro, 'error');
-                        btn.innerHTML = 'Encerrar';
-                        btn.disabled = false;
-                    }
-                } catch (e) {
-                    showToast("Erro crítico no servidor.", 'error');
-                    btn.innerHTML = 'Encerrar';
+                if (resposta.ok) {
+                    showToast("Pontos distribuídos!", 'success');
+                    carregarJogosParaAdmin(); 
+                } else {
+                    showToast("Erro ao encerrar", 'error');
+                    btn.innerHTML = '<i class="ph-bold ph-check-circle"></i> Confirmar Placar';
                     btn.disabled = false;
                 }
+            } catch (e) {
+                showToast("Erro crítico.", 'error');
+                btn.disabled = false;
             }
         }
 
         async function estornarJogo(event, idPartida) {
             const btn = event.currentTarget;
-
-            if(!confirm("ALERTA CRÍTICO: Isto irá subtrair os pontos que os usuários ganharam neste jogo e reabri-lo para um novo placar. Deseja prosseguir?")) {
-                return;
-            }
-
-            const textoOriginal = btn.innerHTML;
+            
             btn.innerHTML = '<i class="ph-bold ph-spinner ph-spin"></i> Estornando...';
             btn.disabled = true;
 
@@ -393,17 +413,15 @@
                 });
 
                 if (resposta.ok) {
-                    showToast("Estorno concluído. A partida foi reaberta!", 'success');
-                    carregarJogosParaAdmin(); // Recarrega as listas e aplica a ordenação automaticamente
+                    showToast("Partida reaberta!", 'success');
+                    carregarJogosParaAdmin();
                 } else {
-                    const err = await resposta.json();
-                    showToast("Erro: " + err.erro, 'error');
-                    btn.innerHTML = textoOriginal;
+                    showToast("Erro ao estornar", 'error');
+                    btn.innerHTML = '<i class="ph-bold ph-arrow-u-up-left"></i> Estornar Pontos';
                     btn.disabled = false;
                 }
             } catch (e) {
-                showToast("Erro crítico no servidor.", 'error');
-                btn.innerHTML = textoOriginal;
+                showToast("Erro crítico.", 'error');
                 btn.disabled = false;
             }
         }
