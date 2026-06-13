@@ -50,14 +50,17 @@ public class CalculoService {
 
         if (palpitesDaPartida.isEmpty()) return;
 
-        // Busca a regra dinâmica (se não existir, cria a padrão)
-        ConfiguracaoPontuacao regra = configRepository.findById("GLOBAL")
+        // 1. O Tradutor: Descobre qual é a regra exata desta fase
+        String chaveFase = obterChaveDeConfiguracao(partida.getFase());
+
+        // 2. Busca a regra dinâmica configurada pelo Admin (se não existir, cria o padrão)
+        ConfiguracaoPontuacao regra = configRepository.findById(chaveFase)
                 .orElseGet(() -> {
                     ConfiguracaoPontuacao padrao = new ConfiguracaoPontuacao();
-                    padrao.setFase("GLOBAL");
+                    padrao.setFase(chaveFase);
                     padrao.setPontosPlacarExato(25);
                     padrao.setPontosVencedor(10);
-                    padrao.setPontosGoloEquipa(5); // A nova regra
+                    padrao.setPontosGoloEquipa(5); 
                     return padrao;
                 });
 
@@ -91,6 +94,23 @@ public class CalculoService {
                 palpiteRepository.save(p);
             }
         }
+    }
+
+    // --- TRADUTOR DE FASES ---
+    // Converte textos como "Grupo A - 1ª Rodada" para a chave "Fase de Grupos"
+    private String obterChaveDeConfiguracao(String faseDaPartida) {
+        if (faseDaPartida == null) return "Fase de Grupos";
+        
+        String faseUpper = faseDaPartida.toUpperCase();
+        
+        if (faseUpper.contains("GRUPO")) return "Fase de Grupos";
+        if (faseUpper.contains("16 AVOS")) return "16 Avos de Final";
+        if (faseUpper.contains("OITAVA")) return "Oitavas de Final";
+        if (faseUpper.contains("QUARTA")) return "Quartas de Final";
+        if (faseUpper.contains("SEMI")) return "Semifinais";
+        if (faseUpper.contains("FINAL")) return "Final";
+        
+        return "Fase de Grupos"; // Fallback seguro
     }
 
     private boolean isVencedorCorreto(Palpite p, Partida part) {

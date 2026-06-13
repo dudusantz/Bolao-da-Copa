@@ -190,7 +190,7 @@
             </button>
 
             <div style="text-align: center;">
-                <a href="/login.html" class="link-secundario">Já tens uma conta? <strong>Faça Login</strong></a>
+                <a href="/login" class="link-secundario">Já tens uma conta? <strong>Faça Login</strong></a>
             </div>
         </form>
     </div>
@@ -243,7 +243,7 @@
                     btnSubmit.style.backgroundColor = 'var(--success)';
                     
                     setTimeout(() => {
-                        window.location.href = '/login.html';
+                        window.location.href = '/login';
                     }, 1000);
                 } else {
                     const err = await resposta.text();

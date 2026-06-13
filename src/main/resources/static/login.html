@@ -244,7 +244,7 @@
                     <input type="checkbox" id="lembrar" name="remember-me"> 
                     <span>Manter conectado</span>
                 </label>
-                <a href="/recuperar-senha.html" class="link-recuperar">Esqueceu a senha?</a>
+                <a href="/recuperar-senha" class="link-recuperar">Esqueceu a senha?</a>
             </div>
 
             <button type="submit" id="btn-submit" class="btn-ademicon">
@@ -252,7 +252,7 @@
             </button>
 
             <div style="text-align: center;">
-                <a href="/cadastro.html" class="link-secundario">Ainda não tens conta? <strong>Cadastre-se</strong></a>
+                <a href="/cadastro" class="link-secundario">Ainda não tens conta? <strong>Cadastre-se</strong></a>
             </div>
         </form>
     </div>
@@ -282,7 +282,7 @@
             try {
                 const resposta = await fetch('/api/auth/login', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' }, // <-- AGORA O JAVA ENTENDE
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
 
@@ -291,7 +291,7 @@
                     btnSubmit.style.backgroundColor = 'var(--success)';
                     
                     setTimeout(() => {
-                        window.location.href = '/index.html'; // Vai para o dashboard
+                        window.location.href = '/dashboard'; // Vai para o dashboard
                     }, 500);
                 } else {
                     erroLoginMsg.style.display = 'flex';

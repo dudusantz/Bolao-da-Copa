@@ -154,7 +154,7 @@
     <nav class="navbar">
         <div class="brand"><i class="ph-fill ph-trophy"></i> Bolão Ademicon</div>
         <div class="user-panel">
-            <a href="/admin.html" id="btn-admin-panel" style="display: none; background: white; color: var(--primary); padding: 6px 14px; border-radius: 8px; font-weight: 800; text-decoration: none; align-items: center; gap: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);"><i class="ph-bold ph-gear"></i> Admin</a>
+            <a href="/admin-panel" id="btn-admin-panel" style="display: none; background: white; color: var(--primary); padding: 6px 14px; border-radius: 8px; font-weight: 800; text-decoration: none; align-items: center; gap: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);"><i class="ph-bold ph-gear"></i> Admin</a>
             <span class="user-name-wrapper"><i class="ph-fill ph-user-circle"></i> <span id="header-nome">...</span></span>
             <span class="pts-badge"><i class="ph-fill ph-star"></i> <span id="header-pontos">0 pts</span></span>
             <button class="btn-logout" onclick="fazerLogout()"><i class="ph-bold ph-sign-out"></i> Sair</button>
@@ -231,7 +231,7 @@
                     document.getElementById('btn-admin-panel').style.display = 'flex';
                 }
             } catch (e) {
-                window.location.href = '/login.html';
+                window.location.href = '/login';
             }
         }
 
@@ -480,7 +480,7 @@
 
         function fazerLogout() {
             document.cookie = "JSESSIONID=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-            window.location.href = '/login.html';
+            window.location.href = '/login';
         }
 
         setInterval(() => {

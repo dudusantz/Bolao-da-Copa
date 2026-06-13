@@ -92,7 +92,7 @@
                 if (res.ok) {
                     btn.innerHTML = '<i class="ph-bold ph-check"></i> Senha Alterada!';
                     btn.style.backgroundColor = 'var(--success)';
-                    setTimeout(() => { window.location.href = '/login.html'; }, 1500);
+                    setTimeout(() => { window.location.href = '/login'; }, 1500);
                 } else {
                     const data = await res.json();
                     alert(data.erro || "Falha ao redefinir.");

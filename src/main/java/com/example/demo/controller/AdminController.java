@@ -1,8 +1,12 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.ConfiguracaoPontuacao;
+import com.example.demo.model.Palpite;
+import com.example.demo.model.Partida;
 import com.example.demo.model.Usuario;
 import com.example.demo.repository.ConfiguracaoPontuacaoRepository;
+import com.example.demo.repository.PalpiteRepository;
+import com.example.demo.repository.PartidaRepository;
 import com.example.demo.repository.UsuarioRepository;
 import com.example.demo.service.CalculoService;
 import org.springframework.http.HttpStatus;
@@ -10,8 +14,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -22,11 +28,19 @@ public class AdminController {
     private final CalculoService calculoService;
     private final UsuarioRepository usuarioRepository;
     private final ConfiguracaoPontuacaoRepository configRepository;
+    private final PartidaRepository partidaRepository;
+    private final PalpiteRepository palpiteRepository;
 
-    public AdminController(CalculoService calculoService, UsuarioRepository usuarioRepository, ConfiguracaoPontuacaoRepository configRepository) {
+    public AdminController(CalculoService calculoService, 
+                           UsuarioRepository usuarioRepository, 
+                           ConfiguracaoPontuacaoRepository configRepository,
+                           PartidaRepository partidaRepository,
+                           PalpiteRepository palpiteRepository) {
         this.calculoService = calculoService;
         this.usuarioRepository = usuarioRepository;
         this.configRepository = configRepository;
+        this.partidaRepository = partidaRepository;
+        this.palpiteRepository = palpiteRepository;
     }
 
     // --- O RAIO-X DA SEGURANÇA ---
@@ -116,6 +130,57 @@ public class AdminController {
             return ResponseEntity.ok("{\"mensagem\": \"Partida encerrada e pontos distribuídos com sucesso!\"}");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"erro\": \"" + e.getMessage() + "\"}");
+        }
+    }
+
+    // --- ROTA DE ESTORNO DE PARTIDA (Válvula de Segurança) ---
+    @PostMapping("/partidas/{id}/estornar")
+    @Transactional // CRÍTICO: Garante que se der erro a meio, o banco desfaz tudo sozinho
+    public ResponseEntity<?> estornarPartida(@PathVariable Long id) {
+        if (!isUserAdmin()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("erro", "Acesso negado."));
+        }
+
+        Partida partida = partidaRepository.findById(id).orElse(null);
+        if (partida == null) {
+            return ResponseEntity.badRequest().body(Map.of("erro", "Partida não encontrada."));
+        }
+
+        if (!partida.isFinalizada()) {
+            return ResponseEntity.badRequest().body(Map.of("erro", "Esta partida não está encerrada."));
+        }
+
+        try {
+            // Busca TODOS os palpites feitos para este jogo específico
+            List<Palpite> palpitesDoJogo = palpiteRepository.findByPartidaId(id);
+
+            // Estorna os pontos da "carteira" de cada utilizador
+            for (Palpite palpite : palpitesDoJogo) {
+                Usuario usuario = palpite.getUsuario();
+                
+                // Subtrai apenas o que o utilizador ganhou neste palpite específico
+                int novaPontuacao = usuario.getPontos() - palpite.getPontosGanhos();
+                // Prevenção de segurança para pontuação não ficar negativa
+                if (novaPontuacao < 0) novaPontuacao = 0; 
+                
+                usuario.setPontos(novaPontuacao);
+                
+                // Zera os pontos do palpite para não ficarem no histórico
+                palpite.setPontosGanhos(0);
+                
+                usuarioRepository.save(usuario);
+                palpiteRepository.save(palpite);
+            }
+
+            // Limpa o placar oficial e reabre a partida
+            partida.setGolosEquipaA(null);
+            partida.setGolosEquipaB(null);
+            partida.setFinalizada(false);
+            partidaRepository.save(partida);
+
+            return ResponseEntity.ok(Map.of("mensagem", "Estorno realizado com sucesso. Partida reaberta!"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("erro", "Erro crítico ao estornar: " + e.getMessage()));
         }
     }
 }

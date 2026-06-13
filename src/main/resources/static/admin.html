@@ -49,8 +49,8 @@
         /* LISTA DE JOGOS */
         .match-row { display: flex; justify-content: space-between; align-items: center; padding: 20px; border: 1px solid var(--border); border-radius: 12px; margin-bottom: 15px; background: white; flex-wrap: wrap; gap: 15px; }
         .match-info { flex: 1; min-width: 200px; }
-        .match-info h4 { font-size: 1.2rem; margin-bottom: 4px; }
-        .match-info span { font-size: 0.85rem; font-weight: 600; color: var(--primary); background: #fee2e2; padding: 4px 10px; border-radius: 8px; display: inline-block;}
+        .match-info h4 { font-size: 1.2rem; margin-bottom: 8px; }
+        .match-info span { font-size: 0.85rem; font-weight: 600; color: var(--primary); background: #fee2e2; padding: 4px 10px; border-radius: 8px; display: inline-flex; align-items: center; gap: 6px;}
         .score-inputs { display: flex; align-items: center; gap: 10px; width: 100%; justify-content: flex-start; flex-wrap: wrap;}
         .score-inputs input { width: 60px; height: 50px; text-align: center; font-size: 1.5rem; font-weight: 800; border: 2px solid var(--border); border-radius: 8px; outline: none; }
         .score-inputs input:focus { border-color: var(--primary); }
@@ -69,7 +69,7 @@
             flex-direction: column;
             gap: 15px;
             z-index: 9999;
-            pointer-events: none; /* Impede que o clique seja bloqueado pelo container invisível */
+            pointer-events: none;
         }
 
         .toast {
@@ -86,7 +86,7 @@
             transform: translateX(150%);
             opacity: 0;
             transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            pointer-events: auto; /* Reativa o clique apenas na notificação */
+            pointer-events: auto;
         }
 
         .toast.show {
@@ -124,7 +124,7 @@
             <button class="nav-btn active" onclick="switchAdminTab('jogos')"><i class="ph-bold ph-soccer-ball"></i> Encerrar Partidas</button>
             <button class="nav-btn" onclick="switchAdminTab('regras')"><i class="ph-bold ph-sliders"></i> Regras de Pontos</button>
         </div>
-        <a href="/index.html" class="back-btn"><i class="ph-bold ph-arrow-left"></i> Voltar ao Sistema</a>
+        <a href="/dashboard" class="back-btn"><i class="ph-bold ph-arrow-left"></i> Voltar ao Sistema</a>
     </aside>
 
     <main class="main-content">
@@ -188,24 +188,17 @@
             carregarConfiguracao(document.getElementById('select-fase').value);
         });
 
-        // --- MOTOR DE NOTIFICAÇÕES (TOAST) ---
         function showToast(mensagem, tipo = 'success') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
             toast.className = `toast ${tipo}`;
-            
             const icone = tipo === 'success' ? 'ph-check-circle' : 'ph-warning-circle';
-            
             toast.innerHTML = `<i class="ph-fill ${icone}"></i> <span>${mensagem}</span>`;
             container.appendChild(toast);
-            
-            // Dispara a animação de entrada com um micro-atraso
             setTimeout(() => toast.classList.add('show'), 10);
-            
-            // Remove automaticamente após 3.5 segundos
             setTimeout(() => {
                 toast.classList.remove('show');
-                setTimeout(() => toast.remove(), 400); // Espera a animação de saída terminar para remover do HTML
+                setTimeout(() => toast.remove(), 400); 
             }, 3500);
         }
 
@@ -214,6 +207,17 @@
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             event.currentTarget.classList.add('active');
             document.getElementById(`tab-${tabName}`).classList.add('active');
+        }
+
+        // Função para formatar a data visualmente
+        function formatarDataHora(dataString) {
+            if (!dataString) return 'Data não definida';
+            const data = new Date(dataString);
+            const dia = String(data.getDate()).padStart(2, '0');
+            const mes = String(data.getMonth() + 1).padStart(2, '0');
+            const horas = String(data.getHours()).padStart(2, '0');
+            const minutos = String(data.getMinutes()).padStart(2, '0');
+            return `${dia}/${mes} às ${horas}:${minutos}`;
         }
 
         async function carregarConfiguracao(faseSelecionada) {
@@ -270,29 +274,64 @@
                 const container = document.getElementById('lista-admin');
                 container.innerHTML = '';
 
-                const jogosAbertos = partidas.filter(p => !p.finalizada);
+                // Separação e ORDENAÇÃO POR DATA
+                // Jogos abertos: Ordena do mais antigo para o mais recente (os próximos a acontecer no topo)
+                const jogosAbertos = partidas
+                    .filter(p => !p.finalizada)
+                    .sort((a, b) => new Date(a.dataHoraDoJogo) - new Date(b.dataHoraDoJogo));
 
+                // Jogos fechados: Ordena do mais recente para o mais antigo (os últimos encerrados no topo)
+                const jogosFechados = partidas
+                    .filter(p => p.finalizada)
+                    .sort((a, b) => new Date(b.dataHoraDoJogo) - new Date(a.dataHoraDoJogo));
+
+                // --- BLOCO 1: JOGOS PENDENTES ---
+                container.innerHTML += `<h3 style="margin: 10px 0 15px 0; font-size: 1.1rem; color: var(--text-dark);">A Aguardar Placar:</h3>`;
+                
                 if(jogosAbertos.length === 0) {
-                    container.innerHTML = '<div class="admin-card" style="text-align: center; color: #64748b; font-weight: bold;">Nenhuma partida pendente de encerramento no momento.</div>';
-                    return;
+                    container.innerHTML += '<div class="admin-card" style="text-align: center; color: #64748b;">Nenhuma partida pendente.</div>';
+                } else {
+                    jogosAbertos.forEach(p => {
+                        container.innerHTML += `
+                            <div class="match-row" id="card_${p.id}">
+                                <div class="match-info">
+                                    <h4>${p.equipaA} vs ${p.equipaB}</h4>
+                                    <span>${p.fase}</span>
+                                    <span style="background: #f1f5f9; color: #64748b; margin-left: 8px;"><i class="ph-bold ph-calendar-blank"></i> ${formatarDataHora(p.dataHoraDoJogo)}</span>
+                                </div>
+                                <div class="score-inputs">
+                                    <input type="number" id="realA_${p.id}" placeholder="0" min="0">
+                                    <span style="color: #94a3b8; font-weight: bold;">X</span>
+                                    <input type="number" id="realB_${p.id}" placeholder="0" min="0">
+                                    <button class="btn-action" style="padding: 12px 20px; font-size: 0.9rem;" onclick="encerrarJogo(event, ${p.id})">Encerrar</button>
+                                </div>
+                            </div>
+                        `;
+                    });
                 }
 
-                jogosAbertos.forEach(p => {
-                    container.innerHTML += `
-                        <div class="match-row" id="card_${p.id}">
-                            <div class="match-info">
-                                <h4>${p.equipaA} vs ${p.equipaB}</h4>
-                                <span>${p.fase}</span>
+                // --- BLOCO 2: JOGOS ENCERRADOS (Válvula de Segurança) ---
+                if(jogosFechados.length > 0) {
+                    container.innerHTML += `<h3 style="margin: 30px 0 15px 0; font-size: 1.1rem; color: var(--text-dark); border-top: 1px solid var(--border); padding-top: 20px;">Jogos Encerrados (Modo Correção):</h3>`;
+                    
+                    jogosFechados.forEach(p => {
+                        container.innerHTML += `
+                            <div class="match-row" style="background: #f8fafc; border-color: #e2e8f0;">
+                                <div class="match-info" style="opacity: 0.8;">
+                                    <h4>${p.equipaA} <span style="color: var(--primary); font-weight: 900;">${p.golosEquipaA} x ${p.golosEquipaB}</span> ${p.equipaB}</h4>
+                                    <span style="background: #e2e8f0; color: #475569;">${p.fase}</span>
+                                    <span style="background: #e2e8f0; color: #475569; margin-left: 8px;"><i class="ph-bold ph-calendar-blank"></i> ${formatarDataHora(p.dataHoraDoJogo)}</span>
+                                </div>
+                                <div class="score-inputs" style="justify-content: flex-end;">
+                                    <button class="btn-action" style="background: white; color: var(--danger); border: 2px solid var(--danger); padding: 10px 15px; font-size: 0.9rem; width: auto;" onclick="estornarJogo(event, ${p.id})">
+                                        <i class="ph-bold ph-arrow-u-up-left"></i> Reabrir e Estornar Pontos
+                                    </button>
+                                </div>
                             </div>
-                            <div class="score-inputs">
-                                <input type="number" id="realA_${p.id}" placeholder="0" min="0">
-                                <span style="color: #94a3b8; font-weight: bold;">X</span>
-                                <input type="number" id="realB_${p.id}" placeholder="0" min="0">
-                                <button class="btn-action" style="padding: 12px 20px; font-size: 0.9rem;" onclick="encerrarJogo(event, ${p.id})">Encerrar</button>
-                            </div>
-                        </div>
-                    `;
-                });
+                        `;
+                    });
+                }
+
             } catch (e) {
                 showToast("Erro ao carregar jogos ou acesso negado.", 'error');
             }
@@ -320,8 +359,8 @@
                     });
 
                     if (resposta.ok) {
-                        document.getElementById(`card_${idPartida}`).style.display = 'none';
                         showToast("Partida encerrada e pontos distribuídos!", 'success');
+                        carregarJogosParaAdmin(); // Recarrega as listas e aplica a ordenação automaticamente
                     } else {
                         const err = await resposta.json();
                         showToast("Erro: " + err.erro, 'error');
@@ -333,6 +372,39 @@
                     btn.innerHTML = 'Encerrar';
                     btn.disabled = false;
                 }
+            }
+        }
+
+        async function estornarJogo(event, idPartida) {
+            const btn = event.currentTarget;
+
+            if(!confirm("ALERTA CRÍTICO: Isto irá subtrair os pontos que os usuários ganharam neste jogo e reabri-lo para um novo placar. Deseja prosseguir?")) {
+                return;
+            }
+
+            const textoOriginal = btn.innerHTML;
+            btn.innerHTML = '<i class="ph-bold ph-spinner ph-spin"></i> Estornando...';
+            btn.disabled = true;
+
+            try {
+                const resposta = await fetch(`/admin/partidas/${idPartida}/estornar`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                if (resposta.ok) {
+                    showToast("Estorno concluído. A partida foi reaberta!", 'success');
+                    carregarJogosParaAdmin(); // Recarrega as listas e aplica a ordenação automaticamente
+                } else {
+                    const err = await resposta.json();
+                    showToast("Erro: " + err.erro, 'error');
+                    btn.innerHTML = textoOriginal;
+                    btn.disabled = false;
+                }
+            } catch (e) {
+                showToast("Erro crítico no servidor.", 'error');
+                btn.innerHTML = textoOriginal;
+                btn.disabled = false;
             }
         }
     </script>
