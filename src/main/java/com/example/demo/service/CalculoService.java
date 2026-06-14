@@ -50,54 +50,89 @@ public class CalculoService {
 
         if (palpitesDaPartida.isEmpty()) return;
 
-        // 1. O Tradutor: Descobre qual é a regra exata desta fase
+        int golA_Real = partida.getGolosEquipaA();
+        int golB_Real = partida.getGolosEquipaB();
+        
+        boolean realVitoriaA = golA_Real > golB_Real;
+        boolean realVitoriaB = golB_Real > golA_Real;
+        boolean realEmpate   = golA_Real == golB_Real;
+
+        // 1. O Tradutor: Descobre a regra desta fase
         String chaveFase = obterChaveDeConfiguracao(partida.getFase());
 
-        // 2. Busca a regra dinâmica configurada pelo Admin (se não existir, cria o padrão)
+        // 2. Busca a regra dinâmica configurada pelo Admin
         ConfiguracaoPontuacao regra = configRepository.findById(chaveFase)
                 .orElseGet(() -> {
                     ConfiguracaoPontuacao padrao = new ConfiguracaoPontuacao();
                     padrao.setFase(chaveFase);
-                    padrao.setPontosPlacarExato(25);
-                    padrao.setPontosVencedor(10);
-                    padrao.setPontosGoloEquipa(5); 
+                    padrao.setPontosEmpateExato(9);
+                    padrao.setPontosVencedorExato(7);
+                    padrao.setPontosVencedorMaisUmGolo(5);
+                    padrao.setPontosVencedor(3);
+                    padrao.setPontosGoloPerdedor(1);
                     return padrao;
                 });
 
         for (Palpite p : palpitesDaPartida) {
             int pontos = 0;
 
-            boolean acertouGolosA = p.getGolosEquipaA().equals(partida.getGolosEquipaA());
-            boolean acertouGolosB = p.getGolosEquipaB().equals(partida.getGolosEquipaB());
+            int golA_Palpite = p.getGolosEquipaA();
+            int golB_Palpite = p.getGolosEquipaB();
 
-            // LÓGICA EM CASCATA (Do prémio maior para o menor)
-            if (acertouGolosA && acertouGolosB) {
-                pontos = regra.getPontosPlacarExato();
-            } 
-            else if (isVencedorCorreto(p, partida)) {
+            // Comparações individuais
+            boolean acertouGolosA = golA_Palpite == golA_Real;
+            boolean acertouGolosB = golB_Palpite == golB_Real;
+
+            // Comparações de resultado
+            boolean palpiteVitoriaA = golA_Palpite > golB_Palpite;
+            boolean palpiteVitoriaB = golB_Palpite > golA_Palpite;
+            boolean palpiteEmpate   = golA_Palpite == golB_Palpite;
+
+            // Validação principal
+            boolean acertouVencedor = (palpiteVitoriaA && realVitoriaA) || 
+                                      (palpiteVitoriaB && realVitoriaB) || 
+                                      (palpiteEmpate && realEmpate);
+
+            // --- LÓGICA EM CASCATA COM VALORES DINÂMICOS ---
+
+            // NÍVEL 1: Empate em cheio
+            if (acertouVencedor && realEmpate && acertouGolosA && acertouGolosB) {
+                pontos = regra.getPontosEmpateExato();
+            }
+            // NÍVEL 2: Resultado do vitorioso em cheio
+            else if (acertouVencedor && !realEmpate && acertouGolosA && acertouGolosB) {
+                pontos = regra.getPontosVencedorExato();
+            }
+            // NÍVEL 3: Vencedor correto + 1 placar correto
+            else if (acertouVencedor && !realEmpate && (acertouGolosA || acertouGolosB)) {
+                pontos = regra.getPontosVencedorMaisUmGolo();
+            }
+            // NÍVEL 4: Acertou Vencedor/Empate apenas
+            else if (acertouVencedor) {
                 pontos = regra.getPontosVencedor();
-            } 
-            else if (acertouGolosA || acertouGolosB) {
-                pontos = regra.getPontosGoloEquipa();
+            }
+            // NÍVEL 5: Errou vencedor, mas acertou o golo do perdedor
+            else if (!acertouVencedor && !realEmpate) {
+                boolean perdeuA = realVitoriaB; 
+                
+                if ((perdeuA && acertouGolosA) || (!perdeuA && acertouGolosB)) {
+                    pontos = regra.getPontosGoloPerdedor();
+                }
             }
 
-            // Atualiza saldos
-            if (pontos > 0) {
-                p.setPontosGanhos(pontos);
-                palpiteRepository.save(p);
+            // --- ATUALIZAÇÃO DOS SALDOS NO BANCO ---
+            p.setPontosGanhos(pontos);
+            palpiteRepository.save(p);
 
+            if (pontos > 0) {
                 Usuario usuario = p.getUsuario();
                 usuario.setPontos(usuario.getPontos() + pontos);
                 usuarioRepository.save(usuario);
-            } else {
-                p.setPontosGanhos(0);
-                palpiteRepository.save(p);
             }
         }
     }
 
     // --- TRADUTOR DE FASES ---
-    // Converte textos como "Grupo A - 1ª Rodada" para a chave "Fase de Grupos"
     private String obterChaveDeConfiguracao(String faseDaPartida) {
         if (faseDaPartida == null) return "Fase de Grupos";
         
@@ -110,21 +145,6 @@ public class CalculoService {
         if (faseUpper.contains("SEMI")) return "Semifinais";
         if (faseUpper.contains("FINAL")) return "Final";
         
-        return "Fase de Grupos"; // Fallback seguro
-    }
-
-    private boolean isVencedorCorreto(Palpite p, Partida part) {
-        boolean palpiteVitoriaA = p.getGolosEquipaA() > p.getGolosEquipaB();
-        boolean realVitoriaA = part.getGolosEquipaA() > part.getGolosEquipaB();
-
-        boolean palpiteVitoriaB = p.getGolosEquipaA() < p.getGolosEquipaB();
-        boolean realVitoriaB = part.getGolosEquipaA() < part.getGolosEquipaB();
-
-        boolean palpiteEmpate = p.getGolosEquipaA().equals(p.getGolosEquipaB());
-        boolean realEmpate = part.getGolosEquipaA().equals(part.getGolosEquipaB());
-
-        return (palpiteVitoriaA && realVitoriaA) ||
-               (palpiteVitoriaB && realVitoriaB) ||
-               (palpiteEmpate && realEmpate);
+        return "Fase de Grupos"; 
     }
 }

@@ -80,15 +80,43 @@
         .toast.error { border-left: 6px solid var(--danger); }
         .toast.error i { color: var(--danger); font-size: 1.5rem; }
 
+        /* =========================================
+           MENU ADMIN RESPONSIVO (MOBILE)
+           ========================================= */
         @media (max-width: 768px) {
             body { flex-direction: column; }
-            .sidebar { width: 100%; height: auto; padding: 1rem; flex-direction: row; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; position: relative;}
-            .brand { width: 100%; justify-content: center; margin-bottom: 10px;}
-            .nav-links { flex-direction: row; gap: 10px; width: 100%; justify-content: center;}
-            .nav-btn { font-size: 0.9rem; padding: 8px 12px; }
-            .back-btn { margin-top: 10px; width: 100%; }
-            .main-content { padding: 1.5rem 1rem; }
+            
+            .sidebar { 
+                width: 100%; height: auto; padding: 15px 10px; 
+                flex-direction: column; align-items: center; gap: 12px; 
+                position: relative; 
+            }
+            .brand { width: 100%; justify-content: center; font-size: 1.3rem; margin-bottom: 5px; }
+            
+            /* Grelha de abas (3 botões lado a lado) */
+            .nav-links { 
+                display: grid; grid-template-columns: repeat(3, 1fr); 
+                gap: 6px; width: 100%; 
+            }
+            .nav-btn { 
+                flex-direction: column; font-size: 0.65rem; 
+                padding: 8px 4px; text-align: center; gap: 4px; 
+                justify-content: center; height: 100%; white-space: normal;
+            }
+            .nav-btn i { font-size: 1.3rem; margin-bottom: 2px; }
+            
+            .back-btn { width: 100%; margin-top: 5px; padding: 10px; font-size: 0.9rem; }
+            
+            /* Ajustes Finos de Interface */
+            .main-content { padding: 1.5rem 10px; }
             .grid-cards { grid-template-columns: 1fr; }
+            .score-input { width: 42px; height: 46px; font-size: 1.2rem; }
+            .team img { width: 40px; height: 28px; }
+            .team-name { font-size: 0.85rem; }
+            
+            /* Ajuste da grelha de regras para caber no mobile */
+            .config-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .input-group input { font-size: 1.1rem; padding: 10px; }
         }
     </style>
 </head>
@@ -145,18 +173,26 @@
                     </select>
                 </div>
 
-                <div class="config-grid">
+                <div class="config-grid" style="grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 15px;">
                     <div class="input-group">
-                        <label>Placar Exato</label>
-                        <input type="number" id="cfg_exato" placeholder="Ex: 25">
+                        <label>Empate Exato</label>
+                        <input type="number" id="cfg_empate_exato" placeholder="Ex: 9">
                     </div>
                     <div class="input-group">
-                        <label>Vencedor/Empate</label>
-                        <input type="number" id="cfg_vencedor" placeholder="Ex: 10">
+                        <label>Vencedor Exato</label>
+                        <input type="number" id="cfg_vencedor_exato" placeholder="Ex: 7">
                     </div>
                     <div class="input-group">
-                        <label>Gols 1 Equipa</label>
-                        <input type="number" id="cfg_golo" placeholder="Ex: 5">
+                        <label>Vencedor + 1 Placar</label>
+                        <input type="number" id="cfg_venc_um_golo" placeholder="Ex: 5">
+                    </div>
+                    <div class="input-group">
+                        <label>Acertou Vencedor</label>
+                        <input type="number" id="cfg_vencedor" placeholder="Ex: 3">
+                    </div>
+                    <div class="input-group">
+                        <label>Golo do Perdedor</label>
+                        <input type="number" id="cfg_golo_perdedor" placeholder="Ex: 1">
                     </div>
                 </div>
                 <button class="btn-action" onclick="salvarConfiguracao()">
@@ -231,9 +267,11 @@
                 const res = await fetch(`/admin/configuracao/${encodeURIComponent(faseSelecionada)}`);
                 if (res.ok) {
                     const config = await res.json();
-                    document.getElementById('cfg_exato').value = config.pontosPlacarExato;
-                    document.getElementById('cfg_vencedor').value = config.pontosVencedor;
-                    document.getElementById('cfg_golo').value = config.pontosGoloEquipa;
+                    document.getElementById('cfg_empate_exato').value = config.pontosEmpateExato || 0;
+                    document.getElementById('cfg_vencedor_exato').value = config.pontosVencedorExato || 0;
+                    document.getElementById('cfg_venc_um_golo').value = config.pontosVencedorMaisUmGolo || 0;
+                    document.getElementById('cfg_vencedor').value = config.pontosVencedor || 0;
+                    document.getElementById('cfg_golo_perdedor').value = config.pontosGoloPerdedor || 0;
                 }
             } catch(e) { console.error("Erro ao ler configurações"); }
         }
@@ -242,9 +280,11 @@
             const faseAtual = document.getElementById('select-fase').value;
             const payload = {
                 fase: faseAtual,
-                pontosPlacarExato: parseInt(document.getElementById('cfg_exato').value),
-                pontosVencedor: parseInt(document.getElementById('cfg_vencedor').value),
-                pontosGoloEquipa: parseInt(document.getElementById('cfg_golo').value)
+                pontosEmpateExato: parseInt(document.getElementById('cfg_empate_exato').value) || 0,
+                pontosVencedorExato: parseInt(document.getElementById('cfg_vencedor_exato').value) || 0,
+                pontosVencedorMaisUmGolo: parseInt(document.getElementById('cfg_venc_um_golo').value) || 0,
+                pontosVencedor: parseInt(document.getElementById('cfg_vencedor').value) || 0,
+                pontosGoloPerdedor: parseInt(document.getElementById('cfg_golo_perdedor').value) || 0
             };
             
             try {

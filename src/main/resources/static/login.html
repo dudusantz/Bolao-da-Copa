@@ -79,7 +79,8 @@
             font-weight: 500;
         }
 
-        .input-group { width: 100%; margin-bottom: 20px; position: relative; }
+        /* --- CORREÇÃO DO ALINHAMENTO DOS INPUTS --- */
+        .input-group { width: 100%; margin-bottom: 20px; }
         
         .input-label {
             display: block;
@@ -91,17 +92,24 @@
             letter-spacing: 0.5px;
         }
 
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center; /* Garante alinhamento vertical perfeito */
+        }
+
         .input-icon {
             position: absolute;
             left: 16px;
-            top: 41px;
-            font-size: 1.2rem;
+            font-size: 1.25rem;
             color: #94a3b8;
+            transition: color 0.2s ease;
+            pointer-events: none; /* Permite clicar através do ícone */
         }
 
         .input-control {
             width: 100%;
-            padding: 14px 16px 14px 45px;
+            padding: 14px 16px 14px 48px; /* Espaço exato para o ícone */
             font-size: 1rem;
             font-weight: 600;
             color: var(--text-dark);
@@ -115,6 +123,8 @@
         .input-control::placeholder { color: #94a3b8; font-weight: 500; }
         .input-control:focus { background: #ffffff; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(227, 27, 35, 0.1); }
         .input-control:focus + .input-icon { color: var(--primary); }
+
+        /* ------------------------------------------- */
 
         .error-message {
             color: var(--danger);
@@ -200,14 +210,18 @@
             
             <div class="input-group">
                 <label class="input-label" for="email">E-mail</label>
-                <input type="email" id="email" class="input-control" placeholder="seuemail@exemplo.com" required autocomplete="email">
-                <i class="ph-bold ph-envelope-simple input-icon"></i>
+                <div class="input-wrapper">
+                    <input type="email" id="email" class="input-control" placeholder="seuemail@exemplo.com" required autocomplete="email">
+                    <i class="ph-bold ph-envelope-simple input-icon"></i>
+                </div>
             </div>
 
             <div class="input-group" style="margin-bottom: 15px;">
                 <label class="input-label" for="senha">Senha</label>
-                <input type="password" id="senha" class="input-control" placeholder="Digite sua senha" required>
-                <i class="ph-bold ph-lock-key input-icon"></i>
+                <div class="input-wrapper">
+                    <input type="password" id="senha" class="input-control" placeholder="Digite sua senha" required>
+                    <i class="ph-bold ph-lock-key input-icon"></i>
+                </div>
             </div>
 
             <div class="form-options">

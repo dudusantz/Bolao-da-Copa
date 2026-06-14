@@ -43,7 +43,7 @@ public class AdminController {
         this.palpiteRepository = palpiteRepository;
     }
 
-    // --- O RAIO-X DA SEGURANÇA ---
+    // --- VALIDAÇÃO DE SEGURANÇA E ESCOPO DE CONTEXTO ---
     private boolean isUserAdmin() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         
@@ -69,7 +69,7 @@ public class AdminController {
         return true;
     }
 
-    // --- ROTAS DE CONFIGURAÇÃO DE PONTOS ---
+    // --- ROTAS DE CONFIGURAÇÃO DE PONTOS (MATRIZ DINÂMICA DE 5 NÍVEIS) ---
     @GetMapping("/configuracao/{fase}")
     public ResponseEntity<?> getConfiguracaoDaFase(@PathVariable String fase) {
         if (!isUserAdmin()) return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -77,9 +77,11 @@ public class AdminController {
         ConfiguracaoPontuacao config = configRepository.findById(fase).orElseGet(() -> {
             ConfiguracaoPontuacao padrao = new ConfiguracaoPontuacao();
             padrao.setFase(fase);
-            padrao.setPontosPlacarExato(25);
-            padrao.setPontosVencedor(10);
-            padrao.setPontosGoloEquipa(5);
+            padrao.setPontosEmpateExato(9);
+            padrao.setPontosVencedorExato(7);
+            padrao.setPontosVencedorMaisUmGolo(5);
+            padrao.setPontosVencedor(3);
+            padrao.setPontosGoloPerdedor(1);
             return padrao;
         });
         
@@ -107,7 +109,8 @@ public class AdminController {
         } catch (Exception e) {
             System.out.println("🚨 ERRO CRÍTICO AO SALVAR NO BANCO: " + e.getMessage());
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"erro\": \"Erro interno: " + e.getMessage() + "\"}");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("{\"erro\": \"Erro interno: " + e.getMessage() + "\"}");
         }
     }
 
@@ -133,9 +136,9 @@ public class AdminController {
         }
     }
 
-    // --- ROTA DE ESTORNO DE PARTIDA (Válvula de Segurança) ---
+    // --- ROTA DE ESTORNO DE PARTIDA (Válvula de Segurança Transacional ACID) ---
     @PostMapping("/partidas/{id}/estornar")
-    @Transactional // CRÍTICO: Garante que se der erro a meio, o banco desfaz tudo sozinho
+    @Transactional // CRÍTICO: Garante atomicidade total no rollback em cascata dos saldos
     public ResponseEntity<?> estornarPartida(@PathVariable Long id) {
         if (!isUserAdmin()) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("erro", "Acesso negado."));
@@ -154,25 +157,26 @@ public class AdminController {
             // Busca TODOS os palpites feitos para este jogo específico
             List<Palpite> palpitesDoJogo = palpiteRepository.findByPartidaId(id);
 
-            // Estorna os pontos da "carteira" de cada utilizador
+            // Estorna os pontos da "carteira" de cada utilizador de forma isolada
             for (Palpite palpite : palpitesDoJogo) {
                 Usuario usuario = palpite.getUsuario();
                 
-                // Subtrai apenas o que o utilizador ganhou neste palpite específico
+                // Subtrai apenas o montante exato que o utilizador ganhou neste palpite específico
                 int novaPontuacao = usuario.getPontos() - palpite.getPontosGanhos();
-                // Prevenção de segurança para pontuação não ficar negativa
+                
+                // Proteção de borda para evitar inconsistência de pontuação negativa no banco
                 if (novaPontuacao < 0) novaPontuacao = 0; 
                 
                 usuario.setPontos(novaPontuacao);
                 
-                // Zera os pontos do palpite para não ficarem no histórico
+                // Zera o ganho do palpite para limpar o histórico do cartão
                 palpite.setPontosGanhos(0);
                 
                 usuarioRepository.save(usuario);
                 palpiteRepository.save(palpite);
             }
 
-            // Limpa o placar oficial e reabre a partida
+            // Limpa os dados de placar oficial e reabre o status para edição no admin
             partida.setGolosEquipaA(null);
             partida.setGolosEquipaB(null);
             partida.setFinalizada(false);
@@ -180,7 +184,8 @@ public class AdminController {
 
             return ResponseEntity.ok(Map.of("mensagem", "Estorno realizado com sucesso. Partida reaberta!"));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("erro", "Erro crítico ao estornar: " + e.getMessage()));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("erro", "Erro crítico ao executar estorno: " + e.getMessage()));
         }
     }
 }
