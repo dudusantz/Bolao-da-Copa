@@ -41,7 +41,7 @@
         .btn-logout { background: rgba(255,255,255,0.1); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
         .btn-logout:hover { background: white; color: var(--primary); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
 
-        /* TABS MODERNAS (TIPO PILL E STICKY) */
+        /* TABS MODERNAS */
         .tabs-container { background: var(--card-bg); padding: 12px 2rem; border-bottom: 1px solid var(--border-light); position: sticky; top: 76px; z-index: 40; box-shadow: 0 4px 15px -5px rgba(0,0,0,0.05); }
         .tabs { display: flex; gap: 1rem; overflow-x: auto; max-width: 1200px; margin: 0 auto; scrollbar-width: none; }
         .tabs::-webkit-scrollbar { display: none; }
@@ -151,54 +151,47 @@
         input[type="number"] { -moz-appearance: textfield; appearance: textfield; text-align: center; padding: 0; }
 
         /* =========================================
+           MODAL DE PERFIL (ESPIONAGEM)
+           ========================================= */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 99999; opacity: 0; transition: opacity 0.3s ease; }
+        .modal-overlay.show { opacity: 1; }
+        .modal-content { background: var(--bg-color); width: 100%; max-width: 500px; height: 85vh; border-radius: 24px; display: flex; flex-direction: column; overflow: hidden; transform: translateY(50px); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 20px 40px rgba(0,0,0,0.2); margin: 20px; }
+        .modal-overlay.show .modal-content { transform: translateY(0); }
+        
+        .modal-header { background: white; padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-light); z-index: 10;}
+        .modal-header h3 { font-size: 1.2rem; font-weight: 800; color: var(--text-dark); display: flex; align-items: center; gap: 8px; }
+        .btn-close-modal { background: #f1f5f9; border: none; width: 36px; height: 36px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; color: var(--text-muted); cursor: pointer; transition: 0.2s; }
+        .btn-close-modal:hover { background: #e2e8f0; color: var(--danger); }
+        
+        .modal-body { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+        
+        .modal-match-card { background: white; border-radius: 16px; padding: 15px; border: 1px solid var(--border-light); display: flex; flex-direction: column; gap: 10px; }
+        .modal-match-header { display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; border-bottom: 1px solid #f1f5f9; padding-bottom: 8px;}
+        .modal-match-teams { display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 5px;}
+        .modal-team { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 80px;}
+        .modal-team img { width: 36px; height: 26px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .modal-team-name { font-size: 0.8rem; font-weight: 700; text-align: center; line-height: 1.1;}
+        .modal-score { display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8fafc; padding: 8px 16px; border-radius: 12px; border: 1px solid var(--border-light); }
+        .modal-score-val { font-size: 1.4rem; font-weight: 800; color: var(--text-dark); letter-spacing: 2px;}
+        .modal-score-pts { font-size: 0.75rem; font-weight: 800; margin-top: 2px; padding: 2px 8px; border-radius: 8px;}
+
+        /* =========================================
            CORREÇÃO CRÍTICA DO MOBILE (UX / GRID)
            ========================================= */
         @media (max-width: 600px) {
-            /* Fix do Header */
-            .navbar { 
-                padding: 15px 12px; 
-                flex-direction: column; 
-                gap: 12px; 
-            }
+            .navbar { padding: 15px 12px; flex-direction: column; gap: 12px; }
             .brand { width: 100%; justify-content: center; font-size: 1.35rem; }
-            .user-panel { 
-                width: 100%; 
-                justify-content: center; 
-                flex-wrap: wrap; /* Deixa os botões fluírem caso a tela seja muito estreita */
-                gap: 8px; 
-            }
+            .user-panel { width: 100%; justify-content: center; flex-wrap: wrap; gap: 8px; }
             .user-name-wrapper { font-size: 0.85rem; }
             .pts-badge { padding: 6px 12px; font-size: 0.9rem; }
             #btn-admin-panel { padding: 6px 12px !important; font-size: 0.85rem !important; }
             .btn-logout { padding: 6px 12px; }
 
-            /* Fix das Abas com CSS GRID (Acaba com o corte nas bordas) */
-            .tabs-container { 
-                position: relative; /* Desliga o sticky no mobile */
-                top: 0; 
-                padding: 10px 8px; 
-            }
-            .tabs { 
-                display: grid;
-                grid-template-columns: repeat(3, 1fr); /* 3 Colunas Exatas e Perfeitas */
-                gap: 6px; 
-                width: 100%; 
-            }
-            .tab-btn { 
-                flex-direction: column; 
-                padding: 10px 4px; 
-                font-size: 0.65rem; /* Fonte ajustada */
-                border-radius: 10px;
-                text-align: center;
-                white-space: normal; /* Deixa o texto empilhar se precisar */
-                line-height: 1.2;
-                gap: 4px;
-                height: 100%;
-                justify-content: center;
-            }
+            .tabs-container { position: relative; top: 0; padding: 10px 8px; }
+            .tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; width: 100%; }
+            .tab-btn { flex-direction: column; padding: 10px 4px; font-size: 0.65rem; border-radius: 10px; text-align: center; white-space: normal; line-height: 1.2; gap: 4px; height: 100%; justify-content: center; }
             .tab-btn i { font-size: 1.4rem; margin-bottom: 2px; }
 
-            /* Espaçamentos e Cards */
             .container { padding: 0 10px; margin-top: 1rem; }
             .grid-cards { grid-template-columns: 1fr; }
             .rank-item { padding: 12px 15px; }
@@ -206,16 +199,48 @@
             .rank-name { font-size: 0.95rem; }
             .rank-pts-val { font-size: 1.2rem; }
             
-            /* Ajuste Fino no Placar (Para não esmagar os nomes) */
             .teams-container { gap: 6px; }
-            .team img { width: 46px; height: 32px; } /* Bandeiras um pouco menores */
-            .team-name { font-size: 0.85rem; } /* Nome das equipas ajustado */
+            .team img { width: 46px; height: 32px; } 
+            .team-name { font-size: 0.85rem; } 
             .score-board { gap: 6px; }
             .score-input { width: 42px; height: 46px; font-size: 1.2rem; }
             .score-separator { font-size: 1rem; }
             
             #toast-container { bottom: 20px; right: 20px; left: 20px; }
             .toast { width: 100%; padding: 14px 20px; font-size: 0.85rem;}
+
+            /* =========================================
+               AJUSTES DO MODAL DE ESPIONAGEM (MOBILE)
+               ========================================= */
+            .modal-content { 
+                margin: 10px; 
+                width: calc(100% - 20px); 
+                height: 90vh; 
+            }
+            .modal-header { padding: 15px 20px; }
+            .modal-body { padding: 15px; gap: 12px; }
+            
+            .modal-match-card { padding: 12px; }
+            .modal-match-teams { gap: 4px; } 
+            
+            .modal-team { width: 65px; } 
+            .modal-team img { width: 32px; height: 22px; } 
+            .modal-team-name { font-size: 0.75rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+            
+            .modal-score { 
+                padding: 6px 10px; 
+                min-width: 80px; 
+            }
+            .modal-score-val { 
+                font-size: 1.15rem; 
+                letter-spacing: 0px; 
+                white-space: nowrap; 
+            }
+            .modal-score-pts { 
+                font-size: 0.65rem; 
+                padding: 2px 6px; 
+                white-space: nowrap; 
+            }
         }
     </style>
 </head>
@@ -248,6 +273,17 @@
         </div>
         <div id="tab-ranking" class="tab-content">
             <div id="lista-ranking"></div>
+        </div>
+    </div>
+
+    <div id="modal-perfil" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="ph-fill ph-binoculars" style="color: var(--primary);"></i> <span id="modal-nome-usuario">Palpites</span></h3>
+                <button class="btn-close-modal" onclick="fecharModalPerfil()"><i class="ph-bold ph-x"></i></button>
+            </div>
+            <div class="modal-body" id="modal-body-content">
+                </div>
         </div>
     </div>
 
@@ -284,7 +320,6 @@
             return `${dia}/${mes} às ${horas}:${minutos}`;
         }
 
-        // --- SISTEMA DE TOASTS ---
         function showToast(mensagem, tipo = 'success') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
@@ -310,10 +345,11 @@
 
         async function carregarSessao() {
             try {
+                // A requisição de sessão eu não coloco cache-busting se não houver necessidade, mas o painel atualiza assim:
                 const res = await fetch('/api/auth/me');
                 if (!res.ok) throw new Error();
                 usuarioLogado = await res.json();
-                document.getElementById('header-nome').innerText = usuarioLogado.nome.split(' ')[0]; // Mostra só o primeiro nome
+                document.getElementById('header-nome').innerText = usuarioLogado.nome.split(' ')[0];
                 document.getElementById('header-pontos').innerText = `${usuarioLogado.pontos} pts`;
 
                 if (usuarioLogado.admin) {
@@ -326,9 +362,11 @@
 
         async function carregarDadosDoPainel() {
             try {
+                // --- CACHE-BUSTING ADICIONADO AQUI ---
+                const timestamp = new Date().getTime();
                 const [resPartidas, resPalpites] = await Promise.all([
-                    fetch('/partidas'),
-                    fetch('/palpites/meus')
+                    fetch(`/partidas?t=${timestamp}`),
+                    fetch(`/palpites/meus?t=${timestamp}`)
                 ]);
                 partidasGlobais = await resPartidas.json();
                 meusPalpitesGlobais = await resPalpites.json();
@@ -490,6 +528,7 @@
             if (palpiteExistente) payload.id = palpiteExistente.id;
 
             try {
+                // Post não tem cache
                 const resposta = await fetch('/palpites', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                 if (resposta.ok) {
                     showToast("Palpite salvo com sucesso!", "success");
@@ -511,7 +550,8 @@
 
         async function carregarRankingReal() {
             try {
-                const res = await fetch('/usuarios/ranking');
+                // --- CACHE-BUSTING ADICIONADO AQUI ---
+                const res = await fetch(`/usuarios/ranking?t=${new Date().getTime()}`);
                 const ranking = await res.json();
                 
                 const container = document.getElementById('lista-ranking');
@@ -541,7 +581,7 @@
                     const euTag = user.id === usuarioLogado.id ? '<span class="rank-tag">Você</span>' : '';
 
                     rowsContainer.innerHTML += `
-                        <div class="rank-item ${cssPos} ${destaqueClass}" style="animation-delay: ${index * 0.08}s">
+                        <div class="rank-item ${cssPos} ${destaqueClass}" style="animation-delay: ${index * 0.08}s; cursor: pointer;" onclick="abrirPerfilUsuario(${user.id}, '${user.nome}')">
                             <div class="rank-left">
                                 <div class="rank-badge">${pos}º</div>
                                 <div class="rank-user-info">
@@ -560,6 +600,86 @@
             }
         }
 
+        // --- FUNÇÕES DO MODAL DE PERFIL (ESPIONAGEM LEGAL) ---
+        function fecharModalPerfil() {
+            const modal = document.getElementById('modal-perfil');
+            modal.classList.remove('show');
+            setTimeout(() => { modal.style.display = 'none'; }, 300);
+        }
+
+        async function abrirPerfilUsuario(idUsuario, nomeUsuario) {
+            if (idUsuario === usuarioLogado.id) {
+                switchTab('historico');
+                return;
+            }
+
+            const modal = document.getElementById('modal-perfil');
+            document.getElementById('modal-nome-usuario').innerText = `Palpites de ${nomeUsuario.split(' ')[0]}`;
+            const container = document.getElementById('modal-body-content');
+            
+            modal.style.display = 'flex';
+            setTimeout(() => modal.classList.add('show'), 10);
+            
+            container.innerHTML = '<div style="text-align:center; padding: 2rem; color: var(--text-muted);"><i class="ph-bold ph-spinner ph-spin" style="font-size: 2rem;"></i><p>A carregar histórico...</p></div>';
+
+            try {
+                // --- CACHE-BUSTING ADICIONADO AQUI ---
+                const res = await fetch(`/palpites/usuario/${idUsuario}/historico?t=${new Date().getTime()}`);
+                const palpitesDoUsuario = await res.json();
+
+                if (palpitesDoUsuario.length === 0) {
+                    container.innerHTML = '<div style="text-align:center; padding: 3rem 1rem; color: var(--text-muted);"><i class="ph-bold ph-ghost" style="font-size: 3rem; opacity:0.5;"></i><p style="margin-top:10px; font-weight:600;">Nenhum palpite visível ainda.</p><p style="font-size:0.85rem;">Palpites de jogos futuros são mantidos em segredo.</p></div>';
+                    return;
+                }
+
+                container.innerHTML = '';
+                
+                palpitesDoUsuario.sort((a, b) => new Date(b.partida.dataHoraDoJogo) - new Date(a.partida.dataHoraDoJogo));
+
+                palpitesDoUsuario.forEach(palpite => {
+                    const partida = palpite.partida;
+                    const finalizada = partida.finalizada;
+                    
+                    let statusLabel, statusColor;
+                    if (finalizada) {
+                        const acertouAlgo = palpite.pontosGanhos > 0;
+                        statusLabel = acertouAlgo ? `+${palpite.pontosGanhos} pts` : '0 pts';
+                        statusColor = acertouAlgo ? 'background: var(--success-bg); color: var(--success);' : 'background: var(--danger-bg); color: var(--danger);';
+                    } else {
+                        statusLabel = '<i class="ph-bold ph-clock"></i> Em Andamento';
+                        statusColor = 'background: #f1f5f9; color: var(--text-muted);';
+                    }
+
+                    container.innerHTML += `
+                        <div class="modal-match-card">
+                            <div class="modal-match-header">
+                                <span>${partida.fase}</span>
+                                <span>${formatarDataHora(partida.dataHoraDoJogo)}</span>
+                            </div>
+                            <div class="modal-match-teams">
+                                <div class="modal-team">
+                                    <img src="${getFlagUrl(partida.equipaA)}" alt="${partida.equipaA}">
+                                    <span class="modal-team-name">${partida.equipaA}</span>
+                                </div>
+                                <div class="modal-score">
+                                    <span class="modal-score-val">${palpite.golosEquipaA} - ${palpite.golosEquipaB}</span>
+                                    <span class="modal-score-pts" style="${statusColor}">${statusLabel}</span>
+                                </div>
+                                <div class="modal-team">
+                                    <img src="${getFlagUrl(partida.equipaB)}" alt="${partida.equipaB}">
+                                    <span class="modal-team-name">${partida.equipaB}</span>
+                                </div>
+                            </div>
+                            ${finalizada ? `<div style="text-align: center; font-size: 0.75rem; color: var(--text-muted); margin-top: 5px;">Placar Oficial: <strong>${partida.golosEquipaA} x ${partida.golosEquipaB}</strong></div>` : ''}
+                        </div>
+                    `;
+                });
+
+            } catch (e) {
+                container.innerHTML = '<div style="text-align:center; padding: 2rem; color: var(--danger);"><i class="ph-bold ph-warning-circle" style="font-size: 2rem;"></i><p>Erro ao carregar dados.</p></div>';
+            }
+        }
+
         function switchTab(tabName) {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -571,6 +691,13 @@
         function fazerLogout() {
             document.cookie = "JSESSIONID=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
             window.location.href = '/login';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('modal-perfil');
+            if (event.target == modal) {
+                fecharModalPerfil();
+            }
         }
 
         setInterval(() => {

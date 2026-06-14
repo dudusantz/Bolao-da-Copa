@@ -111,16 +111,12 @@ public class CalculoService {
             else if (acertouVencedor) {
                 pontos = regra.getPontosVencedor();
             }
-            // NÍVEL 5: Errou vencedor, mas acertou o golo do perdedor
-            else if (!acertouVencedor && !realEmpate) {
-                boolean perdeuA = realVitoriaB; 
-                
-                if ((perdeuA && acertouGolosA) || (!perdeuA && acertouGolosB)) {
-                    pontos = regra.getPontosGoloPerdedor();
-                }
+            // NÍVEL 5: Errou o resultado geral, mas acertou os golos exatos de pelo menos UMA das equipas
+            else if (!acertouVencedor && (acertouGolosA || acertouGolosB)) {
+                pontos = regra.getPontosGoloPerdedor();
             }
 
-            // --- ATUALIZAÇÃO DOS SALDOS NO BANCO ---
+            // --- ATUALIZAÇÃO DOS SALDOS NO BANCO (Reposicionado para dentro do loop) ---
             p.setPontosGanhos(pontos);
             palpiteRepository.save(p);
 

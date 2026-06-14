@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/palpites")
@@ -54,6 +55,40 @@ public class PalpiteController {
     @GetMapping
     public List<Palpite> listarTodosPalpites() {
         return palpiteRepository.findAll();
+    }
+
+    // --- NOVA ROTA DE ESPIONAGEM (ANTI-CHEAT APLICADO) ---
+    @GetMapping("/usuario/{id}/historico")
+    public ResponseEntity<?> getHistoricoDeOutroUsuario(@PathVariable Long id) {
+        try {
+            // Valida se o "espião" tem login
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{\"erro\": \"Não autenticado\"}");
+            }
+
+            // Busca os palpites brutos
+            List<Palpite> todosPalpites = palpiteRepository.findByUsuarioId(id);
+            
+            // Fuso horário correto para a trava
+            ZoneId fusoBrasilia = ZoneId.of("America/Sao_Paulo");
+            LocalDateTime agora = LocalDateTime.now(fusoBrasilia);
+
+            // FILTRO ANTI-CHEAT: Bloqueia vazamento de apostas de jogos futuros
+            List<Palpite> palpitesPermitidos = todosPalpites.stream()
+                .filter(p -> {
+                    if (p.getPartida() == null || p.getPartida().getDataHoraDoJogo() == null) return false;
+                    // Só passa se o jogo JÁ começou (dataHoraDoJogo NÃO é depois de agora)
+                    return !p.getPartida().getDataHoraDoJogo().isAfter(agora); 
+                })
+                .collect(Collectors.toList());
+
+            return ResponseEntity.ok(palpitesPermitidos);
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("{\"erro\": \"Erro ao buscar histórico do utilizador: " + e.getMessage() + "\"}");
+        }
     }
 
     @PostMapping
