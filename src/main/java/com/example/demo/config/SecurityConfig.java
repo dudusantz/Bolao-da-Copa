@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
 @Configuration
 @EnableWebSecurity
@@ -19,9 +20,23 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable()) 
+            
+            // --- CORREÇÃO DO ERRO 403 (SESSÃO EXPIRADA) ---
+            // Quando um acesso for negado por falta de sessão, redireciona para o /login em vez de mostrar a tela de erro 403
+            .exceptionHandling(ex -> ex
+                .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))
+            )
+            
+            // --- CONFIGURAÇÃO DO MANTER CONECTADO (REMEMBER-ME) ---
+            .rememberMe(remember -> remember
+                .key("bolao-ademicon-secret-key-2026") 
+                .rememberMeParameter("remember-me")
+                .tokenValiditySeconds(2592000) // 30 dias
+            )
+
             .authorizeHttpRequests(auth -> auth
                 
-                // 1. Liberta os ficheiros físicos E as NOVAS rotas limpas (Pretty URLs)
+                // 1. Liberta os ficheiros físicos E as rotas limpas (Pretty URLs)
                 .requestMatchers(
                     "/", 
                     "/login", 
@@ -38,11 +53,10 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()
 
                 // 3. Regras da Interface Visual Trancada
-                .requestMatchers("/admin-panel").authenticated() // Protege a tela nova do admin
-                .requestMatchers("/dashboard").authenticated()   // Protege a tela nova do utilizador
+                .requestMatchers("/admin-panel").authenticated() // Protege a tela do admin
+                .requestMatchers("/dashboard").authenticated()   // Protege a tela do utilizador
 
                 // 4. Regras de ADMIN (Protege as rotas de DADOS da API)
-                // A segurança real ocorre no teu AdminController com o isUserAdmin()
                 .requestMatchers("/admin/**").authenticated()
                 .requestMatchers(HttpMethod.POST, "/partidas", "/configuracoes").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/partidas/**").hasRole("ADMIN")

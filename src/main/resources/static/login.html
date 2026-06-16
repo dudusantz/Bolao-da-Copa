@@ -79,7 +79,6 @@
             font-weight: 500;
         }
 
-        /* --- CORREÇÃO DO ALINHAMENTO DOS INPUTS --- */
         .input-group { width: 100%; margin-bottom: 20px; }
         
         .input-label {
@@ -95,7 +94,7 @@
         .input-wrapper {
             position: relative;
             display: flex;
-            align-items: center; /* Garante alinhamento vertical perfeito */
+            align-items: center; 
         }
 
         .input-icon {
@@ -104,12 +103,12 @@
             font-size: 1.25rem;
             color: #94a3b8;
             transition: color 0.2s ease;
-            pointer-events: none; /* Permite clicar através do ícone */
+            pointer-events: none; 
         }
 
         .input-control {
             width: 100%;
-            padding: 14px 16px 14px 48px; /* Espaço exato para o ícone */
+            padding: 14px 16px 14px 48px; 
             font-size: 1rem;
             font-weight: 600;
             color: var(--text-dark);
@@ -123,8 +122,6 @@
         .input-control::placeholder { color: #94a3b8; font-weight: 500; }
         .input-control:focus { background: #ffffff; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(227, 27, 35, 0.1); }
         .input-control:focus + .input-icon { color: var(--primary); }
-
-        /* ------------------------------------------- */
 
         .error-message {
             color: var(--danger);
@@ -227,7 +224,7 @@
             <div class="form-options">
                 <label class="checkbox-group">
                     <input type="checkbox" id="lembrar" name="remember-me"> 
-                    <span>Lembrar-me</span>
+                    <label for="lembrar">Lembrar-me</label>
                 </label>
                 <a href="/recuperar-senha" class="link-recuperar">Esqueceu a senha?</a>
             </div>
@@ -247,6 +244,7 @@
             const btnSubmit = document.getElementById('btn-submit');
             const email = document.getElementById('email').value.trim();
             const senha = document.getElementById('senha').value;
+            const lembrar = document.getElementById('lembrar').checked;
             const erroLoginMsg = document.getElementById('erro-login');
 
             erroLoginMsg.style.display = 'none';
@@ -255,7 +253,12 @@
             btnSubmit.innerHTML = '<i class="ph-bold ph-spinner ph-spin"></i> Autenticando...';
             btnSubmit.disabled = true;
 
-            const payload = { email: email, senha: senha };
+            // O Payload agora envia a flag do "lembrar-me" para a API do Back-end
+            const payload = { 
+                email: email, 
+                senha: senha,
+                lembrar: lembrar
+            };
 
             try {
                 const resposta = await fetch('/api/auth/login', {
