@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Bolão Ademicon</title>
+    <title>Login - Bolão Time Lion</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
@@ -169,16 +169,16 @@
         .link-recuperar { font-size: 0.9rem; font-weight: 700; color: var(--primary); text-decoration: none; transition: 0.2s; }
         .link-recuperar:hover { color: var(--primary-hover); text-decoration: underline; }
 
-        .btn-ademicon {
+        .btn-timelion {
             width: 100%; padding: 16px; font-size: 1.1rem; font-weight: 700; color: #FFF;
             background: linear-gradient(135deg, var(--primary) 0%, #b8141b 100%);
             border: none; border-radius: 12px; cursor: pointer; transition: all 0.3s ease;
             box-shadow: 0 6px 15px rgba(227, 27, 35, 0.25);
             display: flex; justify-content: center; align-items: center; gap: 10px;
         }
-        .btn-ademicon:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(227, 27, 35, 0.35); }
-        .btn-ademicon:active:not(:disabled) { transform: translateY(0); }
-        .btn-ademicon:disabled { opacity: 0.7; cursor: not-allowed; }
+        .btn-timelion:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(227, 27, 35, 0.35); }
+        .btn-timelion:active:not(:disabled) { transform: translateY(0); }
+        .btn-timelion:disabled { opacity: 0.7; cursor: not-allowed; }
 
         .link-secundario {
             font-size: 0.95rem; font-weight: 500; color: var(--text-muted);
@@ -196,7 +196,7 @@
 
     <div class="form-container">
         <div class="brand-logo"><i class="ph-fill ph-trophy"></i></div>
-        <h2 class="title-page">Bolão Ademicon</h2>
+        <h2 class="title-page">Bolão Time Lion</h2>
         <p class="subtitle-page">Acesse sua conta para continuar</p>
 
         <div id="erro-login" class="error-message">
@@ -229,7 +229,7 @@
                 <a href="/recuperar-senha" class="link-recuperar">Esqueceu a senha?</a>
             </div>
 
-            <button type="submit" id="btn-submit" class="btn-ademicon">
+            <button type="submit" id="btn-submit" class="btn-timelion">
                 Entrar no Jogo <i class="ph-bold ph-sign-in"></i>
             </button>
 
@@ -253,7 +253,6 @@
             btnSubmit.innerHTML = '<i class="ph-bold ph-spinner ph-spin"></i> Autenticando...';
             btnSubmit.disabled = true;
 
-            // O Payload agora envia a flag do "lembrar-me" para a API do Back-end
             const payload = { 
                 email: email, 
                 senha: senha,

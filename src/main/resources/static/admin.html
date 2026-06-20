@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel de Comando - Bolão Ademicon</title>
+    <title>Painel de Comando - Bolão Time Lion</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
@@ -93,7 +93,6 @@
             }
             .brand { width: 100%; justify-content: center; font-size: 1.3rem; margin-bottom: 5px; }
             
-            /* Grelha de abas (3 botões lado a lado) */
             .nav-links { 
                 display: grid; grid-template-columns: repeat(3, 1fr); 
                 gap: 6px; width: 100%; 
@@ -107,14 +106,12 @@
             
             .back-btn { width: 100%; margin-top: 5px; padding: 10px; font-size: 0.9rem; }
             
-            /* Ajustes Finos de Interface */
             .main-content { padding: 1.5rem 10px; }
             .grid-cards { grid-template-columns: 1fr; }
             .score-input { width: 42px; height: 46px; font-size: 1.2rem; }
             .team img { width: 40px; height: 28px; }
             .team-name { font-size: 0.85rem; }
             
-            /* Ajuste da grelha de regras para caber no mobile */
             .config-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
             .input-group input { font-size: 1.1rem; padding: 10px; }
         }
@@ -331,7 +328,6 @@
                     .filter(p => p.finalizada)
                     .sort((a, b) => new Date(b.dataHoraDoJogo) - new Date(a.dataHoraDoJogo));
 
-                // --- INJEÇÃO DA ABA: JOGOS PENDENTES ---
                 if(jogosAbertos.length === 0) {
                     containerPendentes.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #64748b; padding: 2rem;">Nenhuma partida pendente.</div>';
                 } else {
@@ -367,7 +363,6 @@
                     });
                 }
 
-                // --- INJEÇÃO DA ABA: JOGOS ENCERRADOS ---
                 if(jogosFechados.length === 0) {
                     containerEncerrados.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #64748b; padding: 2rem;">Nenhum jogo no histórico.</div>';
                 } else {

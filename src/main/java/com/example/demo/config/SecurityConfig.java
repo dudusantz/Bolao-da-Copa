@@ -22,14 +22,13 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable()) 
             
             // --- CORREÇÃO DO ERRO 403 (SESSÃO EXPIRADA) ---
-            // Quando um acesso for negado por falta de sessão, redireciona para o /login em vez de mostrar a tela de erro 403
             .exceptionHandling(ex -> ex
                 .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))
             )
             
             // --- CONFIGURAÇÃO DO MANTER CONECTADO (REMEMBER-ME) ---
             .rememberMe(remember -> remember
-                .key("bolao-ademicon-secret-key-2026") 
+                .key("bolao-timelion-secret-key-2026") // NOME ALTERADO AQUI
                 .rememberMeParameter("remember-me")
                 .tokenValiditySeconds(2592000) // 30 dias
             )

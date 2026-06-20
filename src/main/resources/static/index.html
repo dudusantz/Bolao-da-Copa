@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bolão Ademicon - Dashboard</title>
+    <title>Bolão Time Lion - Dashboard</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -247,7 +247,7 @@
 <body>
 
     <nav class="navbar">
-        <div class="brand"><i class="ph-fill ph-trophy"></i> Bolão Ademicon</div>
+        <div class="brand"><i class="ph-fill ph-trophy"></i> Bolão Time Lion</div>
         <div class="user-panel">
             <a href="/admin-panel" id="btn-admin-panel" style="display: none; background: white; color: var(--primary); padding: 8px 16px; border-radius: 8px; font-weight: 800; text-decoration: none; align-items: center; gap: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);"><i class="ph-bold ph-gear"></i> Admin</a>
             <span class="user-name-wrapper" style="display: flex; align-items: center; gap: 4px;"><i class="ph-fill ph-user-circle" style="font-size: 1.2rem;"></i> <span id="header-nome">...</span></span>
@@ -345,7 +345,6 @@
 
         async function carregarSessao() {
             try {
-                // A requisição de sessão eu não coloco cache-busting se não houver necessidade, mas o painel atualiza assim:
                 const res = await fetch('/api/auth/me');
                 if (!res.ok) throw new Error();
                 usuarioLogado = await res.json();
@@ -362,7 +361,6 @@
 
         async function carregarDadosDoPainel() {
             try {
-                // --- CACHE-BUSTING ADICIONADO AQUI ---
                 const timestamp = new Date().getTime();
                 const [resPartidas, resPalpites] = await Promise.all([
                     fetch(`/partidas?t=${timestamp}`),
@@ -528,7 +526,6 @@
             if (palpiteExistente) payload.id = palpiteExistente.id;
 
             try {
-                // Post não tem cache
                 const resposta = await fetch('/palpites', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                 if (resposta.ok) {
                     showToast("Palpite salvo com sucesso!", "success");
@@ -550,7 +547,6 @@
 
         async function carregarRankingReal() {
             try {
-                // --- CACHE-BUSTING ADICIONADO AQUI ---
                 const res = await fetch(`/usuarios/ranking?t=${new Date().getTime()}`);
                 const ranking = await res.json();
                 
@@ -560,8 +556,7 @@
                     <div class="ranking-wrapper">
                         <div class="ranking-header">
                             <h2><i class="ph-fill ph-trophy" style="color: #F59E0B; filter: drop-shadow(0 2px 4px rgba(245, 158, 11, 0.3));"></i> Ranking Geral</h2>
-                            <p>Os maiores estrategistas do Bolão Ademicon</p>
-                        </div>
+                            <p>Os maiores estrategistas do Bolão Time Lion</p> </div>
                         <div id="ranking-rows-container"></div>
                     </div>
                 `;
@@ -623,7 +618,6 @@
             container.innerHTML = '<div style="text-align:center; padding: 2rem; color: var(--text-muted);"><i class="ph-bold ph-spinner ph-spin" style="font-size: 2rem;"></i><p>A carregar histórico...</p></div>';
 
             try {
-                // --- CACHE-BUSTING ADICIONADO AQUI ---
                 const res = await fetch(`/palpites/usuario/${idUsuario}/historico?t=${new Date().getTime()}`);
                 const palpitesDoUsuario = await res.json();
 
