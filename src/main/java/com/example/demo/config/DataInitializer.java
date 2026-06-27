@@ -1,6 +1,8 @@
 package com.example.demo.config;
 
+import com.example.demo.model.ConfiguracaoPontuacao;
 import com.example.demo.model.Partida;
+import com.example.demo.repository.ConfiguracaoPontuacaoRepository;
 import com.example.demo.repository.PartidaRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -8,9 +10,32 @@ import org.springframework.context.annotation.Configuration;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 public class DataInitializer {
+
+    private static final List<String> FASES_CANONICAS = List.of(
+            "Fase de Grupos",
+            "16 Avos de Final",
+            "Oitavas de Final",
+            "Quartas de Final",
+            "Semifinais",
+            "Final"
+    );
+
+    @Bean
+    public CommandLineRunner carregarRegrasPadrao(ConfiguracaoPontuacaoRepository configRepository) {
+        return args -> {
+            for (String fase : FASES_CANONICAS) {
+                if (configRepository.findByFase(fase).isEmpty()) {
+                    ConfiguracaoPontuacao config = new ConfiguracaoPontuacao();
+                    config.setFase(fase);
+                    configRepository.save(config);
+                }
+            }
+        };
+    }
 
     @Bean
     public CommandLineRunner carregarJogosDaCopa(PartidaRepository partidaRepository) {

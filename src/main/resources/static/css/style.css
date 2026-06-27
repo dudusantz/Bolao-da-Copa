@@ -1,169 +1,221 @@
-/* --- style.css (Unificado e Premium) --- */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+/* Telas de autenticação: login, cadastro, recuperar e redefinir senha */
 
-:root {
-    /* Alinhamento exato com a paleta do Dashboard */
-    --primary: #E31B23;
-    --primary-hover: #b8141b;
-    --bg-color: #F3F4F6;
-    --card-bg: #ffffff;
-    
-    --text-dark: #0f172a;
-    --text-muted: #475569;
-    
-    --border-light: #e2e8f0;
-    --border-focus: #cbd5e1;
-    
-    --fonte-principal: 'Poppins', sans-serif;
-    --sombra-premium: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+body.auth-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background:
+        radial-gradient(ellipse 70% 55% at 10% -5%, rgba(227, 27, 35, 0.14), transparent 55%),
+        radial-gradient(ellipse 50% 45% at 95% 105%, rgba(227, 27, 35, 0.1), transparent 50%),
+        linear-gradient(165deg, #f8fafc 0%, #eef2f7 45%, #e8edf4 100%);
 }
 
-* { 
-    box-sizing: border-box; 
-    margin: 0; 
-    padding: 0; 
+.auth-card {
+    width: 100%;
+    max-width: 440px;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(12px);
+    border-radius: var(--radius-xl);
+    padding: 40px 36px;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    position: relative;
+    overflow: hidden;
+    animation: fadeSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-body {
-    font-family: var(--fonte-principal);
-    background-color: var(--bg-color);
-    color: var(--text-dark);
+.auth-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary), #ff6b6b, var(--primary-dark));
+}
+
+.brand-logo {
     display: flex;
     justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    padding: 20px;
-    -webkit-font-smoothing: antialiased;
+    margin-bottom: 1.25rem;
 }
 
-/* Container Moderno estilo Dashboard */
-.form-container {
-    width: 100%;
-    max-width: 420px;
-    background: var(--card-bg);
-    border-radius: 24px;
-    padding: 40px;
-    box-shadow: var(--sombra-premium);
-    border: 1px solid rgba(226, 232, 240, 0.6);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    animation: fadeSlideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
-}
-
-@keyframes fadeSlideUp { 
-    from { opacity: 0; transform: translateY(20px); } 
-    to { opacity: 1; transform: translateY(0); } 
-}
-
-.timelion-logo { /* NOME ALTERADO AQUI */
-    width: 100%;
-    max-width: 220px;
-    margin-bottom: 30px;
-    display: block;
+.brand-logo i {
+    font-size: 3.2rem;
+    color: var(--primary);
+    filter: drop-shadow(0 6px 12px var(--primary-glow));
 }
 
 .title-page {
-    font-size: 1.5rem;
+    font-size: 1.65rem;
     font-weight: 800;
-    color: var(--text-dark);
-    margin-bottom: 25px;
     text-align: center;
     letter-spacing: -0.5px;
-}
-
-/* Inputs Premium (Idênticos aos placares) */
-.input-group { 
-    width: 100%; 
-    margin-bottom: 18px; 
-}
-
-.input-label {
-    display: block;
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: var(--text-muted);
-    margin-bottom: 8px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.input-control {
-    width: 100%;
-    padding: 14px 16px;
-    font-size: 1rem;
-    font-weight: 500;
     color: var(--text-dark);
-    background: #f8fafc;
-    border: 2px solid var(--border-light);
-    border-radius: 12px;
-    transition: all 0.2s ease-out;
-    outline: none;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
 }
 
-.input-control::placeholder {
-    color: #94a3b8;
-    font-weight: 400;
-}
-
-.input-control:focus {
-    background: #ffffff;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 4px rgba(227, 27, 35, 0.1);
-    transform: translateY(-2px);
-}
-
-/* Botão Primário idêntico ao "Salvar Palpite" */
-.btn-timelion { /* NOME ALTERADO AQUI */
-    width: 100%;
-    padding: 14px;
-    font-size: 1.05rem;
-    font-weight: 700;
-    color: #FFF;
-    background-color: var(--primary);
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    margin-top: 10px;
-    box-shadow: 0 4px 12px rgba(227, 27, 35, 0.2);
-}
-
-.btn-timelion:hover:not(:disabled) { 
-    background-color: var(--primary-hover); 
-    transform: translateY(-2px); 
-    box-shadow: 0 6px 15px rgba(227, 27, 35, 0.3);
-}
-
-.btn-timelion:active:not(:disabled) { 
-    transform: translateY(0); 
-}
-
-.btn-timelion:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-}
-
-/* Links de apoio */
-.link-secundario {
-    font-size: 0.95rem;
-    font-weight: 600;
+.subtitle-page,
+.desc-page {
+    text-align: center;
     color: var(--text-muted);
-    text-decoration: none;
-    margin-top: 20px;
+    font-size: 0.92rem;
+    font-weight: 500;
+    line-height: 1.55;
+    margin-bottom: 28px;
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-wrapper .input-control {
+    padding-left: 46px;
+    background: #f1f5f9;
+    border-color: transparent;
+}
+
+.input-wrapper .input-control:focus {
+    background: #fff;
+}
+
+.input-icon {
+    position: absolute;
+    left: 15px;
+    font-size: 1.15rem;
+    color: #94a3b8;
+    pointer-events: none;
     transition: color 0.2s;
 }
 
-.link-secundario:hover { 
-    color: var(--primary); 
+.input-wrapper .input-control:focus ~ .input-icon { color: var(--primary); }
+
+.error-message {
+    color: var(--danger);
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-bottom: 18px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    background: var(--danger-bg);
+    padding: 12px;
+    border-radius: var(--radius-md);
+    border: 1px solid #fecaca;
+    width: 100%;
+    animation: shake 0.35s ease-in-out;
 }
 
-/* --- Media Query Mobile --- */
+.input-error {
+    border-color: var(--danger) !important;
+    background-color: var(--danger-bg) !important;
+}
+
+.form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: -4px 0 24px;
+    width: 100%;
+}
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.checkbox-group input[type="checkbox"] {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--border-light);
+    border-radius: 5px;
+    background: #f1f5f9;
+    cursor: pointer;
+    display: grid;
+    place-content: center;
+    transition: 0.2s;
+}
+
+.checkbox-group input[type="checkbox"]:checked {
+    background: var(--primary);
+    border-color: var(--primary);
+}
+
+.checkbox-group input[type="checkbox"]:checked::after {
+    content: "✓";
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 800;
+}
+
+.checkbox-group label {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    user-select: none;
+}
+
+.link-recuperar {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--primary);
+    text-decoration: none;
+}
+
+.link-recuperar:hover { text-decoration: underline; }
+
+.link-secundario {
+    display: block;
+    text-align: center;
+    font-size: 0.92rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-decoration: none;
+    margin-top: 24px;
+}
+
+.link-secundario strong {
+    color: var(--text-dark);
+    font-weight: 700;
+    transition: color 0.2s;
+}
+
+.link-secundario:hover strong { color: var(--primary); }
+
+.auth-form { width: 100%; }
+
+.btn-timelion { width: 100%; }
+
 @media (max-width: 500px) {
-    .form-container {
-        padding: 30px 20px;
-        border-radius: 20px;
+    body.auth-page {
+        padding: 16px;
+        padding-top: max(16px, env(safe-area-inset-top));
+        padding-bottom: max(16px, env(safe-area-inset-bottom));
+        align-items: flex-start;
     }
-    .title-page { font-size: 1.3rem; }
+
+    .auth-card {
+        padding: 28px 20px;
+        border-radius: 20px;
+        margin-top: 8px;
+    }
+
+    .title-page { font-size: 1.35rem; }
+    .brand-logo i { font-size: 2.6rem; }
+    .subtitle-page, .desc-page { font-size: 0.85rem; margin-bottom: 22px; }
+    .input-control { padding: 12px 14px; font-size: 16px; }
+    .input-wrapper .input-control { padding-left: 42px; }
+    .btn-timelion { padding: 14px; font-size: 1rem; }
+    .form-options { flex-direction: column; align-items: flex-start; gap: 10px; }
 }

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/configuracoes")
@@ -20,7 +21,17 @@ public class ConfiguracaoPontuacaoController {
     }
 
     @PostMapping
-    public ConfiguracaoPontuacao salvarRegra(@RequestBody ConfiguracaoPontuacao config) {
-        return repository.save(config);
+    public ConfiguracaoPontuacao salvarRegra(@RequestBody ConfiguracaoPontuacao request) {
+        Optional<ConfiguracaoPontuacao> existenteOpt = repository.findByFase(request.getFase());
+        if (existenteOpt.isPresent()) {
+            ConfiguracaoPontuacao configFinal = existenteOpt.get();
+            configFinal.setPontosEmpateExato(request.getPontosEmpateExato());
+            configFinal.setPontosVencedorExato(request.getPontosVencedorExato());
+            configFinal.setPontosVencedorMaisUmGolo(request.getPontosVencedorMaisUmGolo());
+            configFinal.setPontosVencedor(request.getPontosVencedor());
+            configFinal.setPontosGoloPerdedor(request.getPontosGoloPerdedor());
+            return repository.save(configFinal);
+        }
+        return repository.save(request);
     }
 }

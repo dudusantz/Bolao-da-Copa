@@ -1,15 +1,17 @@
 package com.example.demo.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "configuracao_pontuacao")
 public class ConfiguracaoPontuacao {
 
     @Id
-    private String fase = "GLOBAL"; // Usaremos a fase como chave
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(unique = true, nullable = false)
+    private String fase;
 
     private int pontosEmpateExato = 9;
     private int pontosVencedorExato = 7;
@@ -17,7 +19,9 @@ public class ConfiguracaoPontuacao {
     private int pontosVencedor = 3;
     private int pontosGoloPerdedor = 1;
 
-    // --- GETTERS E SETTERS ---
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
     public String getFase() { return fase; }
     public void setFase(String fase) { this.fase = fase; }
 

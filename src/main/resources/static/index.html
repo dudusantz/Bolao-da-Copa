@@ -2,257 +2,26 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Bolão Time Lion - Dashboard</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    
-    <style>
-        :root {
-            --primary: #E31B23;
-            --primary-hover: #b8141b;
-            --bg-color: #f8fafc;
-            --card-bg: #ffffff;
-            --text-dark: #0f172a; 
-            --text-muted: #64748b; 
-            --border-light: #e2e8f0;
-            --border-focus: #cbd5e1;
-            --success: #059669;
-            --success-bg: #ecfdf5;
-            --warning: #d97706;
-            --warning-bg: #fffbeb;
-            --danger: #ef4444;
-            --danger-bg: #fef2f2;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-dark); padding-bottom: 80px; -webkit-font-smoothing: antialiased; }
-
-        /* HEADER PREMIUM */
-        .navbar { background: linear-gradient(135deg, var(--primary) 0%, #a11118 100%); padding: 1.2rem 2rem; color: white; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 20px rgba(227, 27, 35, 0.25); position: sticky; top: 0; z-index: 50; flex-wrap: wrap; gap: 10px;}
-        .brand { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.5px; display: flex; align-items: center; gap: 10px;}
-        
-        .user-panel { display: flex; align-items: center; gap: 15px; font-weight: 600; font-size: 0.95rem; justify-content: flex-end;}
-        
-        .pts-badge { background: rgba(255,255,255,0.15); padding: 8px 16px; border-radius: 20px; backdrop-filter: blur(8px); display: flex; align-items: center; gap: 6px; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.2); font-weight: 800; font-size: 1rem; color: #FFD700; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-        .pts-badge i { font-size: 1.2rem; }
-        
-        .btn-logout { background: rgba(255,255,255,0.1); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
-        .btn-logout:hover { background: white; color: var(--primary); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-
-        /* TABS MODERNAS */
-        .tabs-container { background: var(--card-bg); padding: 12px 2rem; border-bottom: 1px solid var(--border-light); position: sticky; top: 76px; z-index: 40; box-shadow: 0 4px 15px -5px rgba(0,0,0,0.05); }
-        .tabs { display: flex; gap: 1rem; overflow-x: auto; max-width: 1200px; margin: 0 auto; scrollbar-width: none; }
-        .tabs::-webkit-scrollbar { display: none; }
-        .tab-btn { background: transparent; border: none; padding: 10px 20px; font-size: 0.95rem; font-weight: 600; color: var(--text-muted); cursor: pointer; border-radius: 12px; transition: all 0.3s ease; white-space: nowrap; display: flex; align-items: center; gap: 8px; }
-        .tab-btn i { font-size: 1.2rem; }
-        .tab-btn:hover { background: #f1f5f9; color: var(--text-dark); }
-        .tab-btn.active { background: var(--danger-bg); color: var(--primary); box-shadow: inset 0 0 0 1px rgba(227, 27, 35, 0.1); }
-
-        /* CONTAINERS & GRID */
-        .container { max-width: 1200px; margin: 2rem auto; padding: 0 1.5rem; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        .grid-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.8rem; }
-
-        @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .match-card { animation: fadeSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
-
-        /* CARD DE JOGO PREMIUM */
-        .match-card { background: var(--card-bg); border-radius: 20px; padding: 1.8rem; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); border: 1px solid rgba(226, 232, 240, 0.8); transition: all 0.3s ease; display: flex; flex-direction: column; justify-content: space-between;}
-        .match-card:hover { transform: translateY(-5px); box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.1); border-color: var(--border-focus); }
-        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.8rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-light); }
-        .match-info-group { display: flex; flex-direction: column; gap: 6px; }
-        .fase-badge { font-size: 0.75rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; }
-        .date-badge { font-size: 0.85rem; font-weight: 600; color: var(--text-dark); display: flex; align-items: center; gap: 6px; }
-        .date-badge i { color: var(--primary); font-size: 1.1rem;}
-        .status-badge { font-size: 0.75rem; font-weight: 700; padding: 6px 12px; border-radius: 20px; display: inline-flex; align-items: center; gap: 4px; }
-        .status-open { background: var(--success-bg); color: var(--success); }
-
-        /* PLACAR & EQUIPAS */
-        .teams-container { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 15px; margin-bottom: 1.8rem; }
-        .team { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 10px; height: 100%; }
-        .team img { width: 56px; height: 40px; object-fit: cover; border-radius: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); transition: transform 0.2s; }
-        .team img:hover { transform: scale(1.05); }
-        .team-name { font-weight: 700; font-size: 1rem; text-align: center; line-height: 1.2; color: var(--text-dark); }
-        .score-board { display: flex; align-items: center; justify-content: center; gap: 12px; }
-        .score-input { width: 54px; height: 60px; background: #f1f5f9; border: 2px solid transparent; border-radius: 12px; text-align: center; font-size: 1.6rem; font-weight: 800; color: var(--text-dark); transition: all 0.2s ease-out; outline: none; }
-        .score-input:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 0 4px rgba(227, 27, 35, 0.1); transform: translateY(-2px); }
-        .score-input.saved-guess { background: var(--success-bg); border-color: #6ee7b7; color: var(--success); }
-        .score-separator { font-weight: 800; font-size: 1.2rem; color: var(--text-muted); opacity: 0.5; }
-
-        /* BOTÕES DE AÇÃO */
-        .btn-action { width: 100%; padding: 14px; border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.3s ease; border: none; display: flex; justify-content: center; align-items: center; gap: 8px; }
-        .btn-save { background: linear-gradient(135deg, var(--primary) 0%, #b8141b 100%); color: white; box-shadow: 0 6px 15px rgba(227, 27, 35, 0.25); }
-        .btn-save:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(227, 27, 35, 0.35); }
-        .btn-edit { background: transparent; color: var(--text-muted); border: 2px solid var(--border-light); }
-        .btn-edit:hover { border-color: var(--primary); color: var(--primary); background: #fffafb; transform: translateY(-2px); }
-        .btn-disabled { background: var(--border-light); color: #94a3b8; cursor: not-allowed; }
-
-        /* =========================================
-           RANKING PREMIUM BLINDADO
-           ========================================= */
-        .ranking-wrapper { max-width: 700px; margin: 0 auto; padding-bottom: 2rem; }
-        .ranking-header { text-align: center; margin-bottom: 2.5rem; }
-        .ranking-header h2 { font-size: 1.8rem; color: var(--text-dark); display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 800; }
-        .ranking-header p { color: var(--text-muted); font-size: 0.95rem; font-weight: 500; margin-top: 5px; }
-
-        .rank-item { 
-            display: flex; align-items: center; justify-content: space-between; 
-            padding: 16px 24px; margin-bottom: 12px; 
-            background: var(--card-bg); border-radius: 16px; 
-            border: 1px solid var(--border-light); 
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
-            transition: transform 0.2s, box-shadow 0.2s;
-            animation: fadeSlideUp 0.4s ease forwards;
-            opacity: 0;
-            width: 100%;
-        }
-        .rank-item:hover { transform: translateY(-2px); box-shadow: 0 10px 20px -5px rgba(0,0,0,0.08); border-color: var(--border-focus); }
-
-        .rank-left { display: flex; align-items: center; gap: 20px; }
-        
-        .rank-badge { 
-            width: 44px; height: 44px; border-radius: 12px; 
-            background: #f1f5f9; color: var(--text-muted); 
-            display: flex; align-items: center; justify-content: center; 
-            font-size: 1.2rem; font-weight: 800; 
-            flex-shrink: 0;
-        }
-        
-        .rank-p1 .rank-badge { background: linear-gradient(135deg, #FDE047, #F59E0B); color: white; box-shadow: 0 4px 10px rgba(245, 158, 11, 0.3); font-size: 1.4rem; }
-        .rank-p2 .rank-badge { background: linear-gradient(135deg, #E2E8F0, #94A3B8); color: white; box-shadow: 0 4px 10px rgba(148, 163, 184, 0.3); font-size: 1.3rem; }
-        .rank-p3 .rank-badge { background: linear-gradient(135deg, #FDBA74, #B45309); color: white; box-shadow: 0 4px 10px rgba(180, 83, 9, 0.3); font-size: 1.3rem; }
-
-        .rank-user-info { display: flex; flex-direction: column; }
-        .rank-name { font-weight: 700; font-size: 1.15rem; color: var(--text-dark); display: flex; align-items: center; gap: 8px; line-height: 1.2; flex-wrap: wrap;}
-        .rank-tag { font-size: 0.65rem; font-weight: 800; background: var(--primary); color: white; padding: 4px 8px; border-radius: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
-        
-        .rank-score { display: flex; flex-direction: column; align-items: flex-end; flex-shrink: 0;}
-        .rank-pts-val { font-size: 1.6rem; font-weight: 800; color: var(--text-dark); line-height: 1; }
-        .rank-p1 .rank-pts-val { color: #F59E0B; }
-        .rank-pts-lbl { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
-
-        .rank-me { border: 2px solid var(--primary); background: #fffafb; }
-        .rank-me .rank-pts-val { color: var(--primary); }
-
-        /* NOTIFICAÇÕES TOAST */
-        #toast-container { position: fixed; bottom: 30px; right: 30px; display: flex; flex-direction: column; gap: 15px; z-index: 9999; pointer-events: none; }
-        .toast { background: white; color: var(--text-dark); padding: 16px 24px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 12px; font-weight: 600; font-size: 0.95rem; transform: translateX(150%); opacity: 0; transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); pointer-events: auto; }
-        .toast.show { transform: translateX(0); opacity: 1; }
-        .toast.success { border-left: 6px solid var(--success); }
-        .toast.success i { color: var(--success); font-size: 1.5rem; }
-        .toast.error { border-left: 6px solid var(--danger); }
-        .toast.error i { color: var(--danger); font-size: 1.5rem; }
-
-        /* Remove setinhas dos inputs number */
-        input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; appearance: none; margin: 0; }
-        input[type="number"] { -moz-appearance: textfield; appearance: textfield; text-align: center; padding: 0; }
-
-        /* =========================================
-           MODAL DE PERFIL (ESPIONAGEM)
-           ========================================= */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 99999; opacity: 0; transition: opacity 0.3s ease; }
-        .modal-overlay.show { opacity: 1; }
-        .modal-content { background: var(--bg-color); width: 100%; max-width: 500px; height: 85vh; border-radius: 24px; display: flex; flex-direction: column; overflow: hidden; transform: translateY(50px); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 20px 40px rgba(0,0,0,0.2); margin: 20px; }
-        .modal-overlay.show .modal-content { transform: translateY(0); }
-        
-        .modal-header { background: white; padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-light); z-index: 10;}
-        .modal-header h3 { font-size: 1.2rem; font-weight: 800; color: var(--text-dark); display: flex; align-items: center; gap: 8px; }
-        .btn-close-modal { background: #f1f5f9; border: none; width: 36px; height: 36px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; color: var(--text-muted); cursor: pointer; transition: 0.2s; }
-        .btn-close-modal:hover { background: #e2e8f0; color: var(--danger); }
-        
-        .modal-body { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
-        
-        .modal-match-card { background: white; border-radius: 16px; padding: 15px; border: 1px solid var(--border-light); display: flex; flex-direction: column; gap: 10px; }
-        .modal-match-header { display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; border-bottom: 1px solid #f1f5f9; padding-bottom: 8px;}
-        .modal-match-teams { display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 5px;}
-        .modal-team { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 80px;}
-        .modal-team img { width: 36px; height: 26px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .modal-team-name { font-size: 0.8rem; font-weight: 700; text-align: center; line-height: 1.1;}
-        .modal-score { display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8fafc; padding: 8px 16px; border-radius: 12px; border: 1px solid var(--border-light); }
-        .modal-score-val { font-size: 1.4rem; font-weight: 800; color: var(--text-dark); letter-spacing: 2px;}
-        .modal-score-pts { font-size: 0.75rem; font-weight: 800; margin-top: 2px; padding: 2px 8px; border-radius: 8px;}
-
-        /* =========================================
-           CORREÇÃO CRÍTICA DO MOBILE (UX / GRID)
-           ========================================= */
-        @media (max-width: 600px) {
-            .navbar { padding: 15px 12px; flex-direction: column; gap: 12px; }
-            .brand { width: 100%; justify-content: center; font-size: 1.35rem; }
-            .user-panel { width: 100%; justify-content: center; flex-wrap: wrap; gap: 8px; }
-            .user-name-wrapper { font-size: 0.85rem; }
-            .pts-badge { padding: 6px 12px; font-size: 0.9rem; }
-            #btn-admin-panel { padding: 6px 12px !important; font-size: 0.85rem !important; }
-            .btn-logout { padding: 6px 12px; }
-
-            .tabs-container { position: relative; top: 0; padding: 10px 8px; }
-            .tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; width: 100%; }
-            .tab-btn { flex-direction: column; padding: 10px 4px; font-size: 0.65rem; border-radius: 10px; text-align: center; white-space: normal; line-height: 1.2; gap: 4px; height: 100%; justify-content: center; }
-            .tab-btn i { font-size: 1.4rem; margin-bottom: 2px; }
-
-            .container { padding: 0 10px; margin-top: 1rem; }
-            .grid-cards { grid-template-columns: 1fr; }
-            .rank-item { padding: 12px 15px; }
-            .rank-badge { width: 36px; height: 36px; font-size: 1rem; }
-            .rank-name { font-size: 0.95rem; }
-            .rank-pts-val { font-size: 1.2rem; }
-            
-            .teams-container { gap: 6px; }
-            .team img { width: 46px; height: 32px; } 
-            .team-name { font-size: 0.85rem; } 
-            .score-board { gap: 6px; }
-            .score-input { width: 42px; height: 46px; font-size: 1.2rem; }
-            .score-separator { font-size: 1rem; }
-            
-            #toast-container { bottom: 20px; right: 20px; left: 20px; }
-            .toast { width: 100%; padding: 14px 20px; font-size: 0.85rem;}
-
-            /* =========================================
-               AJUSTES DO MODAL DE ESPIONAGEM (MOBILE)
-               ========================================= */
-            .modal-content { 
-                margin: 10px; 
-                width: calc(100% - 20px); 
-                height: 90vh; 
-            }
-            .modal-header { padding: 15px 20px; }
-            .modal-body { padding: 15px; gap: 12px; }
-            
-            .modal-match-card { padding: 12px; }
-            .modal-match-teams { gap: 4px; } 
-            
-            .modal-team { width: 65px; } 
-            .modal-team img { width: 32px; height: 22px; } 
-            .modal-team-name { font-size: 0.75rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
-            
-            .modal-score { 
-                padding: 6px 10px; 
-                min-width: 80px; 
-            }
-            .modal-score-val { 
-                font-size: 1.15rem; 
-                letter-spacing: 0px; 
-                white-space: nowrap; 
-            }
-            .modal-score-pts { 
-                font-size: 0.65rem; 
-                padding: 2px 6px; 
-                white-space: nowrap; 
-            }
-        }
-    </style>
 </head>
-<body>
+<body class="dashboard-page">
 
     <nav class="navbar">
-        <div class="brand"><i class="ph-fill ph-trophy"></i> Bolão Time Lion</div>
-        <div class="user-panel">
-            <a href="/admin-panel" id="btn-admin-panel" style="display: none; background: white; color: var(--primary); padding: 8px 16px; border-radius: 8px; font-weight: 800; text-decoration: none; align-items: center; gap: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);"><i class="ph-bold ph-gear"></i> Admin</a>
-            <span class="user-name-wrapper" style="display: flex; align-items: center; gap: 4px;"><i class="ph-fill ph-user-circle" style="font-size: 1.2rem;"></i> <span id="header-nome">...</span></span>
-            <span class="pts-badge"><i class="ph-fill ph-star"></i> <span id="header-pontos">0 pts</span></span>
-            <button class="btn-logout" onclick="fazerLogout()"><i class="ph-bold ph-sign-out"></i></button>
+        <div class="navbar-row navbar-row-main">
+            <div class="brand"><i class="ph-fill ph-trophy"></i> <span>Bolão Time Lion</span></div>
+            <button class="btn-logout" onclick="fazerLogout()" aria-label="Sair"><i class="ph-bold ph-sign-out"></i></button>
+        </div>
+        <div class="navbar-row navbar-row-user">
+            <div class="user-chip">
+                <i class="ph-fill ph-user-circle"></i>
+                <span id="header-nome" class="user-name-text">...</span>
+            </div>
+            <span class="pts-badge"><i class="ph-fill ph-star"></i> <span id="header-pontos">0</span></span>
+            <a href="/admin-panel" id="btn-admin-panel" class="btn-admin-link" style="display: none;" title="Painel Admin"><i class="ph-bold ph-gear"></i></a>
         </div>
     </nav>
 
@@ -266,9 +35,17 @@
 
     <div class="container">
         <div id="tab-jogos" class="tab-content active">
+            <div class="section-header">
+                <h2><i class="ph-bold ph-soccer-ball" style="color: var(--primary);"></i> Jogos Abertos</h2>
+                <p>Faça o seu palpite antes do apito inicial</p>
+            </div>
             <div class="grid-cards" id="lista-jogos-abertos"></div>
         </div>
         <div id="tab-historico" class="tab-content">
+            <div class="section-header">
+                <h2><i class="ph-bold ph-chart-line-up" style="color: var(--primary);"></i> Meus Resultados</h2>
+                <p>Acompanhe os pontos ganhos em cada partida</p>
+            </div>
             <div class="grid-cards" id="lista-historico"></div>
         </div>
         <div id="tab-ranking" class="tab-content">
@@ -349,7 +126,7 @@
                 if (!res.ok) throw new Error();
                 usuarioLogado = await res.json();
                 document.getElementById('header-nome').innerText = usuarioLogado.nome.split(' ')[0];
-                document.getElementById('header-pontos').innerText = `${usuarioLogado.pontos} pts`;
+                document.getElementById('header-pontos').innerText = usuarioLogado.pontos;
 
                 if (usuarioLogado.admin) {
                     document.getElementById('btn-admin-panel').style.display = 'flex';
@@ -385,7 +162,7 @@
                 .sort((a, b) => new Date(a.dataHoraDoJogo) - new Date(b.dataHoraDoJogo));
 
             if (jogosAbertos.length === 0) {
-                container.innerHTML = '<div style="text-align:center; grid-column: 1 / -1; padding: 4rem; background: var(--card-bg); border-radius: 20px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); border: 1px solid rgba(226, 232, 240, 0.8);"><i class="ph-bold ph-calendar-check" style="font-size: 3.5rem; color: var(--text-muted); margin-bottom: 1rem; opacity: 0.5;"></i><h3 style="color: var(--text-dark); font-size: 1.3rem;">Tudo limpo por aqui!</h3><p style="color: var(--text-muted); margin-top: 5px;">Não há mais jogos pendentes para esta rodada.</p></div>';
+                container.innerHTML = '<div class="empty-state"><i class="ph-bold ph-calendar-check"></i><h3>Tudo limpo por aqui!</h3><p>Não há mais jogos pendentes para esta rodada.</p></div>';
                 return;
             }
 
@@ -458,7 +235,7 @@
             const jogosFechados = partidasGlobais.filter(p => p.finalizada).sort((a, b) => new Date(b.dataHoraDoJogo) - new Date(a.dataHoraDoJogo));
 
             if (jogosFechados.length === 0) {
-                 container.innerHTML = '<div style="text-align:center; grid-column: 1 / -1; padding: 4rem; background: var(--card-bg); border-radius: 20px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); border: 1px solid rgba(226, 232, 240, 0.8);"><i class="ph-bold ph-clock-counter-clockwise" style="font-size: 3.5rem; color: var(--text-muted); margin-bottom: 1rem; opacity: 0.5;"></i><h3 style="color: var(--text-dark); font-size: 1.3rem;">Sem histórico</h3><p style="color: var(--text-muted); margin-top: 5px;">Ainda não tens resultados de jogos finalizados.</p></div>';
+                 container.innerHTML = '<div class="empty-state"><i class="ph-bold ph-clock-counter-clockwise"></i><h3>Sem histórico</h3><p>Ainda não tens resultados de jogos finalizados.</p></div>';
                  return;
             }
 
@@ -549,15 +326,19 @@
             try {
                 const res = await fetch(`/usuarios/ranking?t=${new Date().getTime()}`);
                 const ranking = await res.json();
-                
                 const container = document.getElementById('lista-ranking');
-                
+                const minhaPos = ranking.findIndex(u => u.id === usuarioLogado.id) + 1;
+
                 container.innerHTML = `
-                    <div class="ranking-wrapper">
-                        <div class="ranking-header">
-                            <h2><i class="ph-fill ph-trophy" style="color: #F59E0B; filter: drop-shadow(0 2px 4px rgba(245, 158, 11, 0.3));"></i> Ranking Geral</h2>
-                            <p>Os maiores estrategistas do Bolão Time Lion</p> </div>
-                        <div id="ranking-rows-container"></div>
+                    <div class="ranking-page">
+                        <header class="ranking-top">
+                            <div class="ranking-top-icon"><i class="ph-fill ph-trophy"></i></div>
+                            <div class="ranking-top-text">
+                                <h2>Ranking Geral</h2>
+                                <p>${ranking.length} participantes${minhaPos > 0 ? ` · Você: ${minhaPos}º lugar` : ''}</p>
+                            </div>
+                        </header>
+                        <div class="ranking-list" id="ranking-rows-container"></div>
                     </div>
                 `;
 
@@ -565,34 +346,38 @@
 
                 ranking.forEach((user, index) => {
                     const pos = index + 1;
-                    const cssPos = pos === 1 ? 'rank-p1' : pos === 2 ? 'rank-p2' : pos === 3 ? 'rank-p3' : '';
-                    const destaqueClass = user.id === usuarioLogado.id ? 'rank-me' : '';
-                    
-                    let medalIcon = '';
-                    if (pos === 1) medalIcon = '<i class="ph-fill ph-medal" style="color: #F59E0B; font-size: 1.4rem;"></i>';
-                    else if (pos === 2) medalIcon = '<i class="ph-fill ph-medal" style="color: #94A3B8; font-size: 1.4rem;"></i>';
-                    else if (pos === 3) medalIcon = '<i class="ph-fill ph-medal" style="color: #B45309; font-size: 1.4rem;"></i>';
+                    const isMe = user.id === usuarioLogado.id;
+                    const topClass = pos <= 3 ? `rank-top-${pos}` : '';
+                    const meClass = isMe ? 'rank-me' : '';
 
-                    const euTag = user.id === usuarioLogado.id ? '<span class="rank-tag">Você</span>' : '';
+                    const actionBtn = isMe
+                        ? `<button type="button" class="rank-action" title="Meus resultados" onclick="switchTab('historico')"><i class="ph-bold ph-chart-line-up"></i></button>`
+                        : `<button type="button" class="rank-action" title="Ver palpites" data-user-id="${user.id}" data-user-name="${user.nome.replace(/"/g, '&quot;')}" onclick="handleRankAction(this)"><i class="ph-bold ph-eye"></i></button>`;
 
                     rowsContainer.innerHTML += `
-                        <div class="rank-item ${cssPos} ${destaqueClass}" style="animation-delay: ${index * 0.08}s; cursor: pointer;" onclick="abrirPerfilUsuario(${user.id}, '${user.nome}')">
-                            <div class="rank-left">
-                                <div class="rank-badge">${pos}º</div>
-                                <div class="rank-user-info">
-                                    <div class="rank-name">${user.nome} ${medalIcon} ${euTag}</div>
-                                </div>
+                        <article class="rank-row ${topClass} ${meClass}">
+                            <div class="rank-pos">${pos}</div>
+                            <div class="rank-main">
+                                <p class="rank-name">${user.nome}</p>
+                                ${isMe ? '<span class="rank-you">Você</span>' : ''}
                             </div>
-                            <div class="rank-score">
-                                <span class="rank-pts-val">${user.pontos}</span>
-                                <span class="rank-pts-lbl">pontos</span>
+                            <div class="rank-pts">
+                                <span class="rank-pts-num">${user.pontos}</span>
+                                <span class="rank-pts-unit">pts</span>
                             </div>
-                        </div>
+                            ${actionBtn}
+                        </article>
                     `;
                 });
             } catch (e) {
                 console.error("Erro ao carregar o ranking", e);
+                document.getElementById('lista-ranking').innerHTML =
+                    '<div class="empty-state"><i class="ph-bold ph-warning-circle"></i><h3>Erro ao carregar ranking</h3><p>Tente novamente mais tarde.</p></div>';
             }
+        }
+
+        function handleRankAction(btn) {
+            abrirPerfilUsuario(Number(btn.dataset.userId), btn.dataset.userName);
         }
 
         // --- FUNÇÕES DO MODAL DE PERFIL (ESPIONAGEM LEGAL) ---
@@ -615,14 +400,14 @@
             modal.style.display = 'flex';
             setTimeout(() => modal.classList.add('show'), 10);
             
-            container.innerHTML = '<div style="text-align:center; padding: 2rem; color: var(--text-muted);"><i class="ph-bold ph-spinner ph-spin" style="font-size: 2rem;"></i><p>A carregar histórico...</p></div>';
+            container.innerHTML = '<div class="loading-state"><i class="ph-bold ph-spinner ph-spin"></i><p>A carregar histórico...</p></div>';
 
             try {
                 const res = await fetch(`/palpites/usuario/${idUsuario}/historico?t=${new Date().getTime()}`);
                 const palpitesDoUsuario = await res.json();
 
                 if (palpitesDoUsuario.length === 0) {
-                    container.innerHTML = '<div style="text-align:center; padding: 3rem 1rem; color: var(--text-muted);"><i class="ph-bold ph-ghost" style="font-size: 3rem; opacity:0.5;"></i><p style="margin-top:10px; font-weight:600;">Nenhum palpite visível ainda.</p><p style="font-size:0.85rem;">Palpites de jogos futuros são mantidos em segredo.</p></div>';
+                    container.innerHTML = '<div class="empty-state"><i class="ph-bold ph-ghost"></i><h3>Nenhum palpite visível</h3><p>Palpites de jogos futuros são mantidos em segredo.</p></div>';
                     return;
                 }
 

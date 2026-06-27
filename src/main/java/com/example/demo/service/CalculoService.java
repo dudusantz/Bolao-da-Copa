@@ -57,21 +57,11 @@ public class CalculoService {
         boolean realVitoriaB = golB_Real > golA_Real;
         boolean realEmpate   = golA_Real == golB_Real;
 
-        // 1. O Tradutor: Descobre a regra desta fase
         String chaveFase = obterChaveDeConfiguracao(partida.getFase());
 
-        // 2. Busca a regra dinâmica configurada pelo Admin
-        ConfiguracaoPontuacao regra = configRepository.findById(chaveFase)
-                .orElseGet(() -> {
-                    ConfiguracaoPontuacao padrao = new ConfiguracaoPontuacao();
-                    padrao.setFase(chaveFase);
-                    padrao.setPontosEmpateExato(9);
-                    padrao.setPontosVencedorExato(7);
-                    padrao.setPontosVencedorMaisUmGolo(5);
-                    padrao.setPontosVencedor(3);
-                    padrao.setPontosGoloPerdedor(1);
-                    return padrao;
-                });
+        ConfiguracaoPontuacao regra = configRepository.findByFase(chaveFase)
+                .orElseThrow(() -> new RuntimeException(
+                        "Regras de pontuação não definidas para a fase: " + chaveFase));
 
         for (Palpite p : palpitesDaPartida) {
             int pontos = 0;

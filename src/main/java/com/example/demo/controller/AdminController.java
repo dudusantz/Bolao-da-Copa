@@ -73,39 +73,49 @@ public class AdminController {
     @GetMapping("/configuracao/{fase}")
     public ResponseEntity<?> getConfiguracaoDaFase(@PathVariable String fase) {
         if (!isUserAdmin()) return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        
-        ConfiguracaoPontuacao config = configRepository.findById(fase).orElseGet(() -> {
-            ConfiguracaoPontuacao padrao = new ConfiguracaoPontuacao();
-            padrao.setFase(fase);
-            padrao.setPontosEmpateExato(9);
-            padrao.setPontosVencedorExato(7);
-            padrao.setPontosVencedorMaisUmGolo(5);
-            padrao.setPontosVencedor(3);
-            padrao.setPontosGoloPerdedor(1);
-            return padrao;
-        });
-        
-        return ResponseEntity.ok(config);
+
+        Optional<ConfiguracaoPontuacao> configOpt = configRepository.findByFase(fase);
+        if (configOpt.isPresent()) {
+            return ResponseEntity.ok(configOpt.get());
+        }
+
+        ConfiguracaoPontuacao padrao = new ConfiguracaoPontuacao();
+        padrao.setFase(fase);
+        return ResponseEntity.ok(padrao);
     }
 
     @PostMapping("/configuracao")
-    public ResponseEntity<?> salvarConfiguracao(@RequestBody ConfiguracaoPontuacao novaConfig) {
-        System.out.println(">>> TENTATIVA DE SALVAR REGRAS RECEBIDA PARA A FASE: " + novaConfig.getFase());
-        
+    public ResponseEntity<?> salvarConfiguracao(@RequestBody ConfiguracaoPontuacao request) {
+        System.out.println(">>> TENTATIVA DE SALVAR REGRAS RECEBIDA PARA A FASE: " + request.getFase());
+
         try {
             if (!isUserAdmin()) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body("{\"erro\": \"Falha de permissão.\"}");
             }
-            
-            if (novaConfig.getFase() == null || novaConfig.getFase().isEmpty()) {
+
+            if (request.getFase() == null || request.getFase().isEmpty()) {
                 System.out.println("❌ ERRO: A fase enviada pelo Front-end está vazia.");
-                return ResponseEntity.badRequest().body("{\"erro\": \"Fase não especificada.\"}");
+                return ResponseEntity.badRequest().body("{\"erro\": \"Fase não informada\"}");
             }
 
-            configRepository.save(novaConfig);
+            Optional<ConfiguracaoPontuacao> existenteOpt = configRepository.findByFase(request.getFase());
+            ConfiguracaoPontuacao configFinal;
+
+            if (existenteOpt.isPresent()) {
+                configFinal = existenteOpt.get();
+                configFinal.setPontosEmpateExato(request.getPontosEmpateExato());
+                configFinal.setPontosVencedorExato(request.getPontosVencedorExato());
+                configFinal.setPontosVencedorMaisUmGolo(request.getPontosVencedorMaisUmGolo());
+                configFinal.setPontosVencedor(request.getPontosVencedor());
+                configFinal.setPontosGoloPerdedor(request.getPontosGoloPerdedor());
+            } else {
+                configFinal = request;
+            }
+
+            configRepository.save(configFinal);
             System.out.println("✅ REGRAS SALVAS NO BANCO COM SUCESSO!");
             return ResponseEntity.ok("{\"mensagem\": \"Regras da fase atualizadas com sucesso!\"}");
-            
+
         } catch (Exception e) {
             System.out.println("🚨 ERRO CRÍTICO AO SALVAR NO BANCO: " + e.getMessage());
             e.printStackTrace();
